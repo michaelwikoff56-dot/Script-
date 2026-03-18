@@ -1,0 +1,54 @@
+local player = game.Players.LocalPlayer
+local Run = game:GetService("RunService")
+
+local char, hrp
+
+-- Update character on respawn
+local function setup(c)
+    char = c
+    hrp = char:WaitForChild("HumanoidRootPart")
+end
+
+setup(player.Character or player.CharacterAdded:Wait())
+player.CharacterAdded:Connect(setup)
+
+-- UI
+local tab = tabFrames["Defense"]
+
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.new(0.8,0,0.2,0)
+btn.Position = UDim2.new(0.1,0,0.2,0)
+btn.Text = "Defense: OFF"
+btn.TextScaled = true
+btn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+btn.TextColor3 = Color3.fromRGB(0,0,0)
+btn.Parent = tab
+
+-- Toggle
+local defenseOn = false
+
+btn.MouseButton1Click:Connect(function()
+    defenseOn = not defenseOn
+    btn.Text = "Defense: " .. (defenseOn and "ON" or "OFF")
+end)
+
+-- Anti-grab system
+Run.Heartbeat:Connect(function()
+    if defenseOn and char and hrp then
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and obj ~= hrp then
+                -- Check if close to you (grab range)
+                if (obj.Position - hrp.Position).Magnitude < 6 then
+                    
+                    -- Apply force to fling it away
+                    local bv = Instance.new("BodyVelocity")
+                    bv.Velocity = (obj.Position - hrp.Position).Unit * 200 + Vector3.new(0,100,0)
+                    bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+                    bv.Parent = obj
+
+                    game:GetService("Debris"):AddItem(bv, 0.1)
+                end
+            end
+        end
+    end
+end)
