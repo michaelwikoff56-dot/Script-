@@ -1,7 +1,7 @@
 -- ██████████████████████████████████████████████████████████████████
 -- █                                                                  █
 -- █   SILENCED HUB  -  FOR ROBLOX SCRIPTS & DEV                     █
--- █   Version: 3.0 INSANE  |  discord.gg/bdy4ssD3P4                 █
+-- █   Version: 5.0 RENAISSANCE  |  discord.gg/bdy4ssD3P4                 █
 -- █   Theme: Cyan/Black  |  Key Required                            █
 -- █                                                                  █
 -- ██████████████████████████████████████████████████████████████████
@@ -14,7 +14,7 @@ LogoLabel.BackgroundTransparency = 1
 LogoLabel.Text = "SILENCED HUB"
 LogoLabel.Font = Enum.Font.GothamBold
 LogoLabel.TextSize = 28
-LogoLabel.TextColor3 = Color3.fromRGB(0, 210, 255)
+LogoLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
 LogoLabel.Parent = Card
 
 -- Glow effect on logo
@@ -25,7 +25,7 @@ LogoShadow.BackgroundTransparency = 1
 LogoShadow.Text = "SILENCED HUB"
 LogoShadow.Font = Enum.Font.GothamBold
 LogoShadow.TextSize = 28
-LogoShadow.TextColor3 = Color3.fromRGB(0, 100, 140)
+LogoShadow.TextColor3 = Color3.fromRGB(150, 100, 0)
 LogoShadow.ZIndex = 0
 LogoShadow.Parent = Card
 
@@ -36,7 +36,7 @@ SubLabel.BackgroundTransparency = 1
 SubLabel.Text = "FOR ROBLOX SCRIPTS & DEV"
 SubLabel.Font = Enum.Font.GothamSemibold
 SubLabel.TextSize = 13
-SubLabel.TextColor3 = Color3.fromRGB(100, 200, 230)
+SubLabel.TextColor3 = Color3.fromRGB(255, 230, 150)
 SubLabel.LetterSpacingEm = 0.15
 SubLabel.Parent = Card
 
@@ -44,7 +44,7 @@ SubLabel.Parent = Card
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.85, 0, 0, 1)
 Divider.Position = UDim2.new(0.075, 0, 0, 120)
-Divider.BackgroundColor3 = Color3.fromRGB(0, 210, 255)
+Divider.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 Divider.BackgroundTransparency = 0.6
 Divider.BorderSizePixel = 0
 Divider.Parent = Card
@@ -83,9 +83,9 @@ KeyBox.Position = UDim2.new(0, 8, 0, 0)
 KeyBox.BackgroundTransparency = 1
 KeyBox.Font = Enum.Font.GothamMono
 KeyBox.TextSize = 14
-KeyBox.TextColor3 = Color3.fromRGB(0, 230, 255)
+KeyBox.TextColor3 = Color3.fromRGB(255, 255, 200)
 KeyBox.PlaceholderText = "SILENCED-XXXX-XXXX"
-KeyBox.PlaceholderColor3 = Color3.fromRGB(60, 100, 120)
+KeyBox.PlaceholderColor3 = Color3.fromRGB(100, 80, 0)
 KeyBox.ClearTextOnFocus = false
 KeyBox.Text = ""
 KeyBox.Parent = InputBg
@@ -105,7 +105,7 @@ StatusLabel.Parent = Card
 local SubmitBtn = Instance.new("TextButton")
 SubmitBtn.Size = UDim2.new(0.88, 0, 0, 46)
 SubmitBtn.Position = UDim2.new(0.06, 0, 0, 256)
-SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 200)
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(200, 150, 0)
 SubmitBtn.BorderSizePixel = 0
 SubmitBtn.Text = "SUBMIT KEY"
 SubmitBtn.Font = Enum.Font.GothamBold
@@ -153,7 +153,7 @@ end)
 local function tryVerify(key)
 if VALID_KEYS[key] then
 keyVerified = true
-StatusLabel.TextColor3 = Color3.fromRGB(0, 230, 130)
+StatusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
 StatusLabel.Text = "✅ Key Verified! Loading hub..."
 TweenService:Create(Card, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -250, 0.5, -210 - 50), BackgroundTransparency = 1, Size = UDim2.new(0, 500, 0, 0)}):Play()
 TweenService:Create(Overlay, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
@@ -198,7 +198,7 @@ end)
 local oldText = DiscordBtn.Text
 DiscordBtn.Text = "✅  Link copied to clipboard!"
 TweenService:Create(DiscordBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 200, 100)}):Play()
-StatusLabel.TextColor3 = Color3.fromRGB(0, 230, 130)
+StatusLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
 StatusLabel.Text = "📋  Paste in browser: discord.gg/bdy4ssD3P4"
 task.wait(3)
 DiscordBtn.Text = oldText
@@ -222,571 +222,16 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/
 -- Load XOCU library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/iavichbest/XOCU/refs/heads/main/UI"))()
 
--- Unlock Mouse
-UserInputService.MouseIconEnabled = true
-UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+-- Define existing tabs/groups for compatibility and new Renaissance tab
+local Tabs = Library.Tabs or {}
+local InsaneTab = Library:CreateTab("Insane")
+local InsaneGroup = InsaneTab:CreateGroup({Name = "Insane Features"})
+local InsaneExtra = InsaneTab:CreateGroup({Name = "Extra Features"})
+local DefenseTab = Library:CreateTab("Defense")
+local DefenseGroup = DefenseTab:CreateGroup({Name = "Anti-Cheat & Anti-Kick"})
 
--- Global state storage
-local ToggleStates = {}
-local function SetToggleState(flag, value) ToggleStates[flag] = value end
-local function GetToggleState(flag) return ToggleStates[flag] or false end
-
-local Options = Library.Items or Library.Flags or {}
-local Toggles = Library.Flags or Library.Items or {}
-
-if not sent then
-pcall(function()
-StarterGui:SetCore("ChatMakeSystemMessage", {
-Name     = message;
-Color    = Color3.fromRGB(0, 210, 255);
-Font     = Enum.Font.GothamBold;
-FontSize = Enum.FontSize.Size18;
-})
-end)
-end
-end
-
-task.spawn(function()
-task.wait(1)
-sendHubLoadedMessage()
-notify("SILENCED HUB", "Welcome! Hub V2 loaded successfully. Stay silenced. 🤫", 5)
-end)
-
-                end
-            end)
-            notify("Silenced Hub", "Super Throw Physics Enabled!", 3)
-        else
-            if superThrowConn then
-                superThrowConn:Disconnect()
-                superThrowConn = nil
-            end
-            notify("Silenced Hub", "Super Throw Physics Disabled.", 3)
-        end
-    end
-})
-
-InsaneGroup:CreateSlider({
-    Name = "Super Throw Strength",
-    Flag = "Super Throw Strength",
-    Min = 100,
-    Max = 5000,
-    Default = 850,
-    Callback = function(Value)
-        superThrowStrength = Value
-    end
-})
-
--- Kill Aura
-local killAuraEnabled = false
-InsaneExtra:CreateToggle({
-    Name = "Kill Aura (Fling Everyone)",
-    Flag = "Kill Aura",
-    Default = false,
-    Callback = function(Value)
-        killAuraEnabled = Value
-        if Value then
-            task.spawn(function()
-                while killAuraEnabled do
-                    local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                    if myHRP then
-                        for _, p in pairs(Players:GetPlayers()) do
-                            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                                local targetHRP = p.Character.HumanoidRootPart
-                                if (myHRP.Position - targetHRP.Position).Magnitude < 25 then
-                                    pcall(function()
-                                        ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
-                                        task.wait(0.05)
-                                        ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
-                                    end)
-                                end
-                            end
-                        end
-                    end
-                    task.wait(0.1)
-                end
-            end)
-            notify("Silenced Hub", "Kill Aura Enabled! Flinging nearby players.", 3)
-        else
-            notify("Silenced Hub", "Kill Aura Disabled.", 3)
-        end
-    end
-})
-
--- Auto Farm Cash (PCLD Method)
-local autoFarmEnabled = false
-InsaneExtra:CreateToggle({
-    Name = "Auto Farm Cash",
-    Flag = "Auto Farm Cash",
-    Default = false,
-    Callback = function(Value)
-        autoFarmEnabled = Value
-        if Value then
-            task.spawn(function()
-                while autoFarmEnabled do
-                    local char = Player.Character
-                    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        for _, v in pairs(workspace:GetChildren()) do
-                            if v.Name:find("PlayerCharacterLocationDetector") and v:IsA("BasePart") then
-                                pcall(function()
-                                    hrp.CFrame = v.CFrame * CFrame.new(0, 3, 0)
-                                end)
-                                task.wait(0.5)
-                            end
-                        end
-                    end
-                    task.wait(1)
-                end
-            end)
-            notify("Silenced Hub", "Auto Farm Cash Enabled!", 3)
-        else
-            notify("Silenced Hub", "Auto Farm Cash Disabled.", 3)
-        end
-    end
-})
-
-
--- NEW: Advanced Blobman Features, Anti-Cheater Counters, and Multi-Layered Anti-Kick
-
-                                    task.wait(0.5)
-                                end
-
-                                -- Teleport Blobman to target and fling
-                                pcall(function()
-                                    blobman:SetPrimaryPartCFrame(targetHRP.CFrame * CFrame.new(0, 5, 0))
-                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
-                                end)
-                            end
-                        end
-                    end
-                    task.wait(0.5)
-                end
-            end)
-        else
-            blobmanKickTarget = nil
-            notify("Silenced Hub", "Blobman Anti-Cheater Kick Disabled.", 3)
-        end
-    end
-})
-
-InsaneGroup:CreateButton({
-    Name = "Set Blobman Kick Target",
-    Flag = "Set Blobman Kick Target",
-    Callback = function()
-        if selectedTarget then
-            blobmanKickTarget = selectedTarget
-            notify("Silenced Hub", "Blobman Kick Target set to: " .. selectedTarget.Name, 3)
-        else
-            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
-        end
-    end,
-    Tooltip = "Sets the currently selected target as the Blobman Kick target."
-})
-
--- Super Blobman Throw (Enhanced)
-local superBlobmanThrowEnabled = false
-local superBlobmanThrowStrength = 1500 -- Even higher strength
-
-InsaneGroup:CreateToggle({
-    Name = "Super Blobman Throw (Enhanced)",
-    Flag = "Super Blobman Throw Enhanced",
-    Default = false,
-    Callback = function(Value)
-        superBlobmanThrowEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Super Blobman Throw Enhanced Enabled!", 3)
-            task.spawn(function()
-                while superBlobmanThrowEnabled do
-                    local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
-                    if blobman and blobman:FindFirstChild("Head") then
-                        local head = blobman.Head
-                        local bv = head:FindFirstChild("SuperBlobmanBV")
-                        if not bv then
-                            bv = Instance.new("BodyVelocity")
-                            bv.Name = "SuperBlobmanBV"
-                            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                            bv.Parent = head
-                        end
-                        bv.Velocity = Workspace.CurrentCamera.CFrame.LookVector * superBlobmanThrowStrength
-                    end
-                    task.wait(0.01)
-                end
-                -- Clean up BodyVelocity when disabled
-                local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
-                if blobman and blobman:FindFirstChild("Head") then
-                    local bv = blobman.Head:FindFirstChild("SuperBlobmanBV")
-                    if bv then bv:Destroy() end
-                end
-            end)
-        else
-            notify("Silenced Hub", "Super Blobman Throw Enhanced Disabled.", 3)
-        end
-    end
-})
-
-InsaneGroup:CreateSlider({
-    Name = "Super Blobman Throw Strength",
-    Flag = "Super Blobman Throw Strength",
-    Min = 1000,
-    Max = 10000,
-    Default = 1500,
-    Callback = function(Value)
-        superBlobmanThrowStrength = Value
-    end
-})
-
--- Multi-Layered Anti-Kick System
-local antiKickV3Enabled = false
-local kickBypassConnection = nil
-
-local function enableKickBypass()
-    local oldNamecall
-    local mt = getrawmetatable(game)
-    setreadonly(mt, false)
-
-    oldNamecall = mt.__namecall
-    mt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        if method == "Kick" then
-            warn("Silenced Hub: Attempted kick detected and bypassed!")
-            return nil -- Bypass the kick
-        end
-        return oldNamecall(self, ...)
-    end)
-    setreadonly(mt, true)
-    notify("Silenced Hub", "Kick Bypass (Metatable Hook) Active!", 3)
-end
-
-local function disableKickBypass()
-    local mt = getrawmetatable(game)
-    setreadonly(mt, false)
-    if kickBypassConnection then
-        mt.__namecall = kickBypassConnection.oldNamecall
-        kickBypassConnection = nil
-    end
-    setreadonly(mt, true)
-    notify("Silenced Hub", "Kick Bypass (Metatable Hook) Disabled.", 3)
-end
-
-InsaneExtra:CreateToggle({
-    Name = "Anti Kick V3 (Metatable Hook)",
-    Flag = "Anti Kick V3",
-    Default = false,
-    Callback = function(Value)
-        antiKickV3Enabled = Value
-        if Value then
-            enableKickBypass()
-        else
-            disableKickBypass()
-        end
-    end
-})
-
--- Enhanced Anti-Kick (PCLD Backup)
--- The existing PCLD anti-kick is already good, but we can make it more aggressive
--- by ensuring the item is always present and re-spawning it instantly if destroyed.
-
-local enhancedPCLDAntiKickEnabled = false
-local pcldBackupConnection = nil
-
-InsaneExtra:CreateToggle({
-    Name = "Enhanced PCLD Anti Kick",
-    Flag = "Enhanced PCLD Anti Kick",
-    Default = false,
-    Callback = function(Value)
-        enhancedPCLDAntiKickEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Enhanced PCLD Anti Kick Active!", 3)
-            task.spawn(function()
-                while enhancedPCLDAntiKickEnabled do
-                    local char = Player.Character
-                    local hrp  = char and char:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local fixedPCLD = autoScanPCLD() -- Existing function
-                        if fixedPCLD then
-                            local toysFolder = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
-                            local currentGold = toysFolder and toysFolder:FindFirstChild("SprayCanWD")
-
-                            if not currentGold then
-                                -- Re-spawn if missing
-                                local spawnPos = fixedPCLD.CFrame * CFrame.new(0, 2, 0)
-                                local MenuToys    = ReplicatedStorage:WaitForChild("MenuToys")
-                                local SpawnRemote = MenuToys:WaitForChild("SpawnToyRemoteFunction")
-                                SpawnRemote:InvokeServer("SprayCanWD", spawnPos, Vector3.zero)
-                                task.wait(0.5) -- Give it a moment to spawn
-                                toysFolder = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
-                                currentGold = toysFolder and toysFolder:FindFirstChild("SprayCanWD")
-
-                                if currentGold then
-                                    local holdPart = currentGold:FindFirstChild("HoldPart", 5)
-                                    for _, p in pairs(currentGold:GetDescendants()) do
-                                        if p:IsA("BasePart") then
-                                            p.Transparency = 0.5
-                                            p.Color = Color3.fromRGB(0, 210, 255)
-                                            p.Material = Enum.Material.Neon
-                                            p.CanCollide = false
-                                        end
-                                    end
-                                    pcall(function()
-                                        holdPart.HoldItemRemoteFunction:InvokeServer(currentGold, char)
-                                        task.wait(0.3)
-                                        holdPart.DropItemRemoteFunction:InvokeServer(currentGold, fixedPCLD.CFrame, Vector3.zero)
-                                    end)
-                                    notify("Silenced Hub", "PCLD Anti-Kick item re-spawned!", 2)
-                                end
-                            end
-
-                            if currentGold and fixedPCLD then
-                                currentGold:PivotTo(fixedPCLD.CFrame)
-                                local main = currentGold:FindFirstChild("Main") or currentGold:FindFirstChild("HoldPart")
-                                if main and main:IsA("BasePart") then
-                                    main.AssemblyLinearVelocity = Vector3.zero
-                                    main.AssemblyAngularVelocity = Vector3.zero
-                                end
-                            end
-                        end
-                    end
-                    task.wait(0.1)
-                end
-            end)
-        else
-            notify("Silenced Hub", "Enhanced PCLD Anti Kick Disabled.", 3)
-        end
-    end
-})
-
--- Anti-Cheater Detection & Counter (General)
-local antiCheaterCounterEnabled = false
-local cheaterDetectionConnection = nil
-
-InsaneExtra:CreateToggle({
-    Name = "Auto Anti-Cheater Counter",
-    Flag = "Auto Anti-Cheater Counter",
-    Default = false,
-    Callback = function(Value)
-        antiCheaterCounterEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Auto Anti-Cheater Counter Enabled!", 3)
-            cheaterDetectionConnection = Players.PlayerAdded:Connect(function(newPlayer)
-                newPlayer.CharacterAdded:Connect(function(char)
-                    task.spawn(function()
-                        while antiCheaterCounterEnabled and newPlayer.Parent do
-                            local hrp = char:FindFirstChild("HumanoidRootPart")
-                            if hrp then
-                                -- Example: Detect rapid CFrame changes (teleporting/speed hacking)
-                                local oldCFrame = hrp.CFrame
-                                task.wait(0.1)
-                                local newCFrame = hrp.CFrame
-                                if (oldCFrame.Position - newCFrame.Position).Magnitude > 50 then -- Threshold for teleport/speed
-                                    notify("Silenced Hub", "Detected potential cheater: " .. newPlayer.Name .. ". Countering!", 3)
-                                    -- Automatically set them as Blobman Kick target and activate
-                                    blobmanKickTarget = newPlayer
-                                    if not blobmanKickEnabled then
-                                        -- Temporarily enable blobman kick to counter
-                                        blobmanKickEnabled = true
-                                        task.wait(2) -- Let it run for a bit
-                                        blobmanKickEnabled = false
-                                    end
-                                end
-                            end
-                            task.wait(0.5)
-                        end
-                    end)
-                end)
-            end)
-        else
-            if cheaterDetectionConnection then cheaterDetectionConnection:Disconnect() end
-            notify("Silenced Hub", "Auto Anti-Cheater Counter Disabled.", 3)
-        end
-    end
-})
-
--- Existing Shuriken Anti-Kick (ensure it\'s still active and considered a backup)
--- No changes needed here, just noting its role in the multi-layered system.
--- The previous script already included a robust Shuriken Anti-Kick.
-
-
--- ============================================================
---  ALL DONE — FINAL NOTIFY
--- ============================================================
-task.wait(2)
-pcall(function()
-notify("SILENCED HUB", "✅ All systems loaded! discord.gg/bdy4ssD3P4 | RightShift to toggle UI.", 6)
-end)
-
--- ============================================================
---  ALL DONE — FINAL NOTIFY
--- ============================================================
-task.wait(2)
-pcall(function()
-notify("SILENCED HUB", "✅ All systems loaded! discord.gg/bdy4ssD3P4 | RightShift to toggle UI.", 6)
-end)
-
--- OPTIMIZED INSANE KICK FEATURES
-
--- ============================================================
---  INSANE TAB (OPTIMIZED KICKS)
--- ============================================================
-
--- 1. Insane Grab Kick (Black Hole Trigger / PCLD Desync)
-local insaneGrabKickEnabled = false
-local insaneGrabKickTarget = nil
-
-InsaneGroup:CreateToggle({
-    Name = "Insane Grab Kick (Black Hole)",
-    Flag = "Insane Grab Kick",
-    Default = false,
-    Callback = function(Value)
-        insaneGrabKickEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Insane Grab Kick Enabled! Select a target.", 3)
-            task.spawn(function()
-                while insaneGrabKickEnabled do
-                    if insaneGrabKickTarget and insaneGrabKickTarget.Character and insaneGrabKickTarget.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetHRP = insaneGrabKickTarget.Character.HumanoidRootPart
-                        local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                        
-                        if myHRP then
-                                -- Teleport to target to ensure grab and desync PCLD
-                                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-                                task.wait(0.1)
-
-                                -- Attempt to desync target's PCLD by rapidly changing their position
-                                local targetPCLD = Workspace:FindFirstChild(insaneGrabKickTarget.Name .. "PlayerCharacterLocationDetector")
-                                if targetPCLD then
-                                    pcall(function()
-                                        targetPCLD.CFrame = CFrame.new(math.random(-10000, 10000), math.random(1000, 5000), math.random(-10000, 10000))
-                                    end)
-                                end
-                            
-                            pcall(function()
-                                -- Grab the target
-                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
-                                task.wait(0.1)
-                                
-                                -- Apply extreme BodyVelocity to target to trigger anti-cheat "lagged in air" and "flying"
-                                local bv = Instance.new("BodyVelocity")
-                                bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                bv.Velocity = Vector3.new(math.random(-5000, 5000), 999999, math.random(-5000, 5000)) -- Shoot them erratically upwards
-                                bv.Parent = targetHRP
-                                
-                                -- Fling them while they have extreme velocity
-                                ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
-                                
-                                -- Clean up our end
-                                Debris:AddItem(bv, 0.5)
-                            end)
-                        end
-                    end
-                    task.wait(0.5) -- Wait before trying again to avoid self-lag
-                end
-            end)
-        else
-            insaneGrabKickTarget = nil
-            notify("Silenced Hub", "Insane Grab Kick Disabled.", 3)
-        end
-    end
-})
-
-InsaneGroup:CreateButton({
-    Name = "Set Insane Grab Kick Target",
-    Flag = "Set Insane Grab Kick Target",
-    Callback = function()
-        if selectedTarget then
-            insaneGrabKickTarget = selectedTarget
-            notify("Silenced Hub", "Insane Grab Kick Target set to: " .. selectedTarget.Name, 3)
-        else
-            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
-        end
-    end,
-    Tooltip = "Sets the currently selected target for the Insane Grab Kick."
-})
-
--- 2. Insane Blobman Kick (Plot Glitch / Collision Overload)
-local insaneBlobmanKickEnabled = false
-local insaneBlobmanKickTarget = nil
-
-InsaneGroup:CreateToggle({
-    Name = "Insane Blobman Kick (Collision Overload)",
-    Flag = "Insane Blobman Kick",
-    Default = false,
-    Callback = function(Value)
-        insaneBlobmanKickEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Insane Blobman Kick Enabled! Select a target.", 3)
-            task.spawn(function()
-                while insaneBlobmanKickEnabled do
-                    if insaneBlobmanKickTarget and insaneBlobmanKickTarget.Character and insaneBlobmanKickTarget.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetHRP = insaneBlobmanKickTarget.Character.HumanoidRootPart
-                        local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                        
-                        if myHRP then
-                            -- Ensure Blobman exists
-                            local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
-                            if not blobman then
-                                spawnBlobman()
-                                task.wait(1)
-                                blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
-                            end
-
-                            if blobman and blobman:FindFirstChild("VehicleSeat") then
-                                local seat = blobman.VehicleSeat
-                                if not seat.Occupant then
-                                    pcall(function() seat:Sit(Player.Character.Humanoid) end)
-                                    task.wait(0.5)
-                                end
-
-                                pcall(function()
-                                    -- Teleport Blobman and target's PCLD to a high, isolated location
-                                    local highCFrame = CFrame.new(targetHRP.Position.X, 5000, targetHRP.Position.Z)
-                                    blobman:SetPrimaryPartCFrame(highCFrame)
-                                    targetHRP.CFrame = highCFrame
-
-                                    local targetPCLD = Workspace:FindFirstChild(insaneBlobmanKickTarget.Name .. "PlayerCharacterLocationDetector")
-                                    if targetPCLD then
-                                        pcall(function()
-                                            targetPCLD.CFrame = highCFrame
-                                        end)
-                                    end
-                                    task.wait(0.1)
-                                    
-                                    -- Apply even more erratic angular and linear velocity to Blobman to create a "super tornado" effect
-                                    for _, part in pairs(blobman:GetDescendants()) do
-                                        if part:IsA("BasePart") then
-                                            part.AssemblyAngularVelocity = Vector3.new(math.random(-10000, 10000), math.random(-10000, 10000), math.random(-10000, 10000))
-                                            part.AssemblyLinearVelocity = Vector3.new(math.random(-1000, 1000), 10000, math.random(-1000, 1000))
-                                        end
-                                    end
-                                    
-                                    -- Fling the target while inside the tornado to trigger "lagged in air" and "impossible flying"
-                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
-                                end)
-                            end
-                        end
-                    end
-                    task.wait(0.2) -- Faster iteration for maximum chaos
-                end
-            end)
-        else
-            insaneBlobmanKickTarget = nil
-            notify("Silenced Hub", "Insane Blobman Kick Disabled.", 3)
-        end
-    end
-})
-
-InsaneGroup:CreateButton({
-    Name = "Set Insane Blobman Kick Target",
-    Flag = "Set Insane Blobman Kick Target",
-    Callback = function()
-        if selectedTarget then
-            insaneBlobmanKickTarget = selectedTarget
-            notify("Silenced Hub", "Insane Blobman Kick Target set to: " .. selectedTarget.Name, 3)
-        else
-            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
-        end
-    end,
-    Tooltip = "Sets the currently selected target for the Insane Blobman Kick."
-})
+local RenaissanceTab = Library:CreateTab("Renaissance")
+local RenaissanceGroup = RenaissanceTab:CreateGroup({Name = "Ultimate Features"})
 
 -- PCLD Nullifier (Anti-Anti-Cheat)
 local pcldNullifierEnabled = false
@@ -816,121 +261,147 @@ DefenseGroup:CreateToggle({
     end
 })
 
--- RENAISSANCE-INSPIRED FEATURES
+-- NEW RENAISSANCE TAB
+local RenaissanceTab = Library:CreateTab("Renaissance")
+local RenaissanceGroup = RenaissanceTab:CreateGroup({Name = "Ultimate Features"})
 
--- ============================================================
---  RENAISSANCE TAB
--- ============================================================
-
--- 1. Metatable Spoofing (Advanced Anti-Kick/Anti-Detection)
-local metatableSpoofingEnabled = false
-
-InsaneGroup:CreateToggle({
-    Name = "Metatable Spoofing (Anti-Detect)",
-    Flag = "Metatable Spoofing",
-    Default = false,
+-- 4. Walkspeed Slider
+local walkspeedValue = 16 -- Default Roblox walkspeed
+RenaissanceGroup:CreateSlider({
+    Name = "Walkspeed",
+    Flag = "Walkspeed",
+    Min = 0,
+    Max = 100,
+    Default = walkspeedValue,
     Callback = function(Value)
-        metatableSpoofingEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Metatable Spoofing Enabled!", 3)
-            -- Implement metatable spoofing for key game services/remotes here
-            -- This is a placeholder and would require in-depth knowledge of FTAP's internal workings
-            -- Example: Spoofing __namecall or __index for specific instances
-            pcall(function()
-                local oldNamecall
-                oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-                    local namecallMethod = getnamecallmethod()
-                    if namecallMethod == "FireServer" and (self.Name == "GrabRemote" or self.Name == "FlingRemote") then
-                        -- Log or modify remote calls if needed
-                        -- print("Intercepted remote call: " .. self.Name)
-                    end
-                    return oldNamecall(self, ...)
-                end)
-            end)
-        else
-            notify("Silenced Hub", "Metatable Spoofing Disabled.", 3)
-            -- Unhook metatable if possible, or restart script
+        walkspeedValue = Value
+        if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+            Player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = Value
         end
     end
 })
 
--- 2. Infinite Strength Fling
-local infiniteStrengthEnabled = false
-
-InsaneGroup:CreateToggle({
-    Name = "Infinite Strength Fling",
-    Flag = "Infinite Strength Fling",
-    Default = false,
+-- 5. Jumppower Slider
+local jumppowerValue = 50 -- Default Roblox jumppower
+RenaissanceGroup:CreateSlider({
+    Name = "Jumppower",
+    Flag = "Jumppower",
+    Min = 0,
+    Max = 200,
+    Default = jumppowerValue,
     Callback = function(Value)
-        infiniteStrengthEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Infinite Strength Fling Enabled!", 3)
-            -- Hook FlingRemote to always send max strength
-            local oldFlingRemote
-            oldFlingRemote = hookfunction(ReplicatedStorage.GrabEvents.FlingRemote.FireServer, function(self, targetHRP, force)
-                return oldFlingRemote(self, targetHRP, Vector3.new(math.huge, math.huge, math.huge)) -- Max force
-            end)
-        else
-            notify("Silenced Hub", "Infinite Strength Fling Disabled.", 3)
-            -- Unhook function
+        jumppowerValue = Value
+        if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+            Player.Character:FindFirstChildOfClass("Humanoid").JumpPower = Value
         end
     end
 })
 
--- 3. Silent Aim Grab
-local silentAimGrabEnabled = false
-
-InsaneGroup:CreateToggle({
-    Name = "Silent Aim Grab",
-    Flag = "Silent Aim Grab",
+-- 6. No-Clip Toggle
+local noClipEnabled = false
+RenaissanceGroup:CreateToggle({
+    Name = "No-Clip",
+    Flag = "No-Clip",
     Default = false,
     Callback = function(Value)
-        silentAimGrabEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Silent Aim Grab Enabled!", 3)
-            task.spawn(function()
-                while silentAimGrabEnabled do
-                    local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                    if myHRP then
-                        local closestPlayer = nil
-                        local minDistance = math.huge
-
-                        for _, p in pairs(Players:GetPlayers()) do
-                            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                                local targetHRP = p.Character.HumanoidRootPart
-                                local distance = (myHRP.Position - targetHRP.Position).Magnitude
-                                if distance < minDistance then
-                                    minDistance = distance
-                                    closestPlayer = p
-                                end
-                            end
-                        end
-
-                        if closestPlayer and minDistance < 50 then -- Only aim if player is within 50 studs
-                            local targetHRP = closestPlayer.Character.HumanoidRootPart
-                            -- Simulate aiming by setting player's look vector towards target
-                            -- This might be detected, a more subtle approach would be to spoof the remote call's origin
-                            -- For now, direct CFrame manipulation for demonstration
-                            Player.Character.HumanoidRootPart.CFrame = CFrame.new(myHRP.Position, targetHRP.Position)
-                            
-                            -- Automatically grab the closest player
-                            pcall(function()
-                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
-                            end)
-                        end
-                    end
-                    task.wait(0.1)
+        noClipEnabled = Value
+        if Player.Character then
+            for _, part in pairs(Player.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = not Value
                 end
-            end)
+            end
+        end
+        notify("Silenced Hub", "No-Clip " .. (Value and "Enabled" or "Disabled") .. "!", 3)
+    end
+})
+
+-- 7. Player ESP (Box ESP)
+local playerEspEnabled = false
+local espConnections = {}
+
+RenaissanceGroup:CreateToggle({
+    Name = "Player ESP",
+    Flag = "Player ESP",
+    Default = false,
+    Callback = function(Value)
+        playerEspEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Player ESP Enabled!", 3)
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= Player and p.Character then
+                    local function createEsp(char)
+                        local head = char:FindFirstChild("Head")
+                        if head then
+                            local box = Instance.new("BoxHandleAdornment")
+                            box.Adornee = head
+                            box.AlwaysOnTop = true
+                            box.ZIndex = 7
+                            box.Size = Vector3.new(2, 5, 1) -- Approximate size for a player
+                            box.Color3 = Color3.fromRGB(255, 0, 0)
+                            box.Transparency = 0.5
+                            box.Parent = char
+                            return box
+                        end
+                    end
+
+                    local espBox = createEsp(p.Character)
+                    table.insert(espConnections, p.Character.DescendantAdded:Connect(function(descendant)
+                        if descendant:IsA("BasePart") and descendant.Name == "Head" then
+                            if espBox then espBox:Destroy() end
+                            espBox = createEsp(descendant.Parent)
+                        end
+                    end))
+                    table.insert(espConnections, p.Character.Humanoid.Died:Connect(function()
+                        if espBox then espBox:Destroy() end
+                    end))
+                end
+            end
         else
-            notify("Silenced Hub", "Silent Aim Grab Disabled.", 3)
+            notify("Silenced Hub", "Player ESP Disabled.", 3)
+            for _, conn in pairs(espConnections) do
+                conn:Disconnect()
+            end
+            espConnections = {}
+            for _, p in pairs(Players:GetPlayers()) do
+                if p.Character then
+                    for _, box in pairs(p.Character:GetChildren()) do
+                        if box:IsA("BoxHandleAdornment") and box.Name == "BoxHandleAdornment" then
+                            box:Destroy()
+                        end
+                    end
+                end
+            end
         end
     end
 })
 
--- UI Theme Update (Example: Gold/Black or Neon Cyan)
--- This would involve modifying existing UI creation functions or adding new ones
--- For simplicity, we'll just update the version string and add a comment.
+-- Unlock Mouse
+UserInputService.MouseIconEnabled = true
+UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 
--- Update script version to 4.0 RENAISSANCE
--- The version string is typically at the top of the script.
+-- Global state storage
+local ToggleStates = {}
+local function SetToggleState(flag, value) ToggleStates[flag] = value end
+local function GetToggleState(flag) return ToggleStates[flag] or false end
+
+local Options = Library.Items or Library.Flags or {}
+local Toggles = Library.Flags or Library.Items or {}
+
+if not sent then
+pcall(function()
+StarterGui:SetCore("ChatMakeSystemMessage", {
+Name     = message;
+Color    = Color3.fromRGB(0, 210, 255);
+Font     = Enum.Font.GothamBold;
+FontSize = Enum.FontSize.Size18;
+})
+end)
+end
+end
+
+task.spawn(function()
+task.wait(1)
+sendHubLoadedMessage()
+notify("SILENCED HUB", "Welcome to the Renaissance! Hub V5 loaded. 👑", 5)
+
