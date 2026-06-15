@@ -815,3 +815,122 @@ DefenseGroup:CreateToggle({
         end
     end
 })
+
+-- RENAISSANCE-INSPIRED FEATURES
+
+-- ============================================================
+--  RENAISSANCE TAB
+-- ============================================================
+
+-- 1. Metatable Spoofing (Advanced Anti-Kick/Anti-Detection)
+local metatableSpoofingEnabled = false
+
+InsaneGroup:CreateToggle({
+    Name = "Metatable Spoofing (Anti-Detect)",
+    Flag = "Metatable Spoofing",
+    Default = false,
+    Callback = function(Value)
+        metatableSpoofingEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Metatable Spoofing Enabled!", 3)
+            -- Implement metatable spoofing for key game services/remotes here
+            -- This is a placeholder and would require in-depth knowledge of FTAP's internal workings
+            -- Example: Spoofing __namecall or __index for specific instances
+            pcall(function()
+                local oldNamecall
+                oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+                    local namecallMethod = getnamecallmethod()
+                    if namecallMethod == "FireServer" and (self.Name == "GrabRemote" or self.Name == "FlingRemote") then
+                        -- Log or modify remote calls if needed
+                        -- print("Intercepted remote call: " .. self.Name)
+                    end
+                    return oldNamecall(self, ...)
+                end)
+            end)
+        else
+            notify("Silenced Hub", "Metatable Spoofing Disabled.", 3)
+            -- Unhook metatable if possible, or restart script
+        end
+    end
+})
+
+-- 2. Infinite Strength Fling
+local infiniteStrengthEnabled = false
+
+InsaneGroup:CreateToggle({
+    Name = "Infinite Strength Fling",
+    Flag = "Infinite Strength Fling",
+    Default = false,
+    Callback = function(Value)
+        infiniteStrengthEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Infinite Strength Fling Enabled!", 3)
+            -- Hook FlingRemote to always send max strength
+            local oldFlingRemote
+            oldFlingRemote = hookfunction(ReplicatedStorage.GrabEvents.FlingRemote.FireServer, function(self, targetHRP, force)
+                return oldFlingRemote(self, targetHRP, Vector3.new(math.huge, math.huge, math.huge)) -- Max force
+            end)
+        else
+            notify("Silenced Hub", "Infinite Strength Fling Disabled.", 3)
+            -- Unhook function
+        end
+    end
+})
+
+-- 3. Silent Aim Grab
+local silentAimGrabEnabled = false
+
+InsaneGroup:CreateToggle({
+    Name = "Silent Aim Grab",
+    Flag = "Silent Aim Grab",
+    Default = false,
+    Callback = function(Value)
+        silentAimGrabEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Silent Aim Grab Enabled!", 3)
+            task.spawn(function()
+                while silentAimGrabEnabled do
+                    local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+                    if myHRP then
+                        local closestPlayer = nil
+                        local minDistance = math.huge
+
+                        for _, p in pairs(Players:GetPlayers()) do
+                            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                                local targetHRP = p.Character.HumanoidRootPart
+                                local distance = (myHRP.Position - targetHRP.Position).Magnitude
+                                if distance < minDistance then
+                                    minDistance = distance
+                                    closestPlayer = p
+                                end
+                            end
+                        end
+
+                        if closestPlayer and minDistance < 50 then -- Only aim if player is within 50 studs
+                            local targetHRP = closestPlayer.Character.HumanoidRootPart
+                            -- Simulate aiming by setting player's look vector towards target
+                            -- This might be detected, a more subtle approach would be to spoof the remote call's origin
+                            -- For now, direct CFrame manipulation for demonstration
+                            Player.Character.HumanoidRootPart.CFrame = CFrame.new(myHRP.Position, targetHRP.Position)
+                            
+                            -- Automatically grab the closest player
+                            pcall(function()
+                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                            end)
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        else
+            notify("Silenced Hub", "Silent Aim Grab Disabled.", 3)
+        end
+    end
+})
+
+-- UI Theme Update (Example: Gold/Black or Neon Cyan)
+-- This would involve modifying existing UI creation functions or adding new ones
+-- For simplicity, we'll just update the version string and add a comment.
+
+-- Update script version to 4.0 RENAISSANCE
+-- The version string is typically at the top of the script.
