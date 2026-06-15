@@ -621,3 +621,151 @@ task.wait(2)
 pcall(function()
 notify("SILENCED HUB", "✅ All systems loaded! discord.gg/bdy4ssD3P4 | RightShift to toggle UI.", 6)
 end)
+
+-- OPTIMIZED INSANE KICK FEATURES
+
+-- ============================================================
+--  INSANE TAB (OPTIMIZED KICKS)
+-- ============================================================
+
+-- 1. Insane Grab Kick (Black Hole Trigger)
+local insaneGrabKickEnabled = false
+local insaneGrabKickTarget = nil
+
+InsaneGroup:CreateToggle({
+    Name = "Insane Grab Kick (Black Hole)",
+    Flag = "Insane Grab Kick",
+    Default = false,
+    Callback = function(Value)
+        insaneGrabKickEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Insane Grab Kick Enabled! Select a target.", 3)
+            task.spawn(function()
+                while insaneGrabKickEnabled do
+                    if insaneGrabKickTarget and insaneGrabKickTarget.Character and insaneGrabKickTarget.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetHRP = insaneGrabKickTarget.Character.HumanoidRootPart
+                        local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+                        
+                        if myHRP then
+                            -- Teleport to target to ensure grab
+                            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                            task.wait(0.1)
+                            
+                            pcall(function()
+                                -- Grab the target
+                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                                task.wait(0.1)
+                                
+                                -- Apply extreme BodyVelocity to target to trigger anti-cheat "lagged in air"
+                                local bv = Instance.new("BodyVelocity")
+                                bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                bv.Velocity = Vector3.new(0, 999999, 0) -- Shoot them straight up infinitely
+                                bv.Parent = targetHRP
+                                
+                                -- Fling them while they have extreme velocity
+                                ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                                
+                                -- Clean up our end
+                                Debris:AddItem(bv, 0.5)
+                            end)
+                        end
+                    end
+                    task.wait(0.5) -- Wait before trying again to avoid self-lag
+                end
+            end)
+        else
+            insaneGrabKickTarget = nil
+            notify("Silenced Hub", "Insane Grab Kick Disabled.", 3)
+        end
+    end
+})
+
+InsaneGroup:CreateButton({
+    Name = "Set Insane Grab Kick Target",
+    Flag = "Set Insane Grab Kick Target",
+    Callback = function()
+        if selectedTarget then
+            insaneGrabKickTarget = selectedTarget
+            notify("Silenced Hub", "Insane Grab Kick Target set to: " .. selectedTarget.Name, 3)
+        else
+            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
+        end
+    end,
+    Tooltip = "Sets the currently selected target for the Insane Grab Kick."
+})
+
+-- 2. Insane Blobman Kick (Plot Glitch / Collision Overload)
+local insaneBlobmanKickEnabled = false
+local insaneBlobmanKickTarget = nil
+
+InsaneGroup:CreateToggle({
+    Name = "Insane Blobman Kick (Collision Overload)",
+    Flag = "Insane Blobman Kick",
+    Default = false,
+    Callback = function(Value)
+        insaneBlobmanKickEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Insane Blobman Kick Enabled! Select a target.", 3)
+            task.spawn(function()
+                while insaneBlobmanKickEnabled do
+                    if insaneBlobmanKickTarget and insaneBlobmanKickTarget.Character and insaneBlobmanKickTarget.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetHRP = insaneBlobmanKickTarget.Character.HumanoidRootPart
+                        local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+                        
+                        if myHRP then
+                            -- Ensure Blobman exists
+                            local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                            if not blobman then
+                                spawnBlobman()
+                                task.wait(1)
+                                blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                            end
+
+                            if blobman and blobman:FindFirstChild("VehicleSeat") then
+                                local seat = blobman.VehicleSeat
+                                if not seat.Occupant then
+                                    pcall(function() seat:Sit(Player.Character.Humanoid) end)
+                                    task.wait(0.5)
+                                end
+
+                                pcall(function()
+                                    -- Teleport Blobman exactly inside the target to cause massive collision physics
+                                    blobman:SetPrimaryPartCFrame(targetHRP.CFrame)
+                                    
+                                    -- Apply erratic angular velocity to Blobman to create a "tornado" effect
+                                    for _, part in pairs(blobman:GetDescendants()) do
+                                        if part:IsA("BasePart") then
+                                            part.AssemblyAngularVelocity = Vector3.new(math.random(-5000, 5000), math.random(-5000, 5000), math.random(-5000, 5000))
+                                            part.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
+                                        end
+                                    end
+                                    
+                                    -- Fling the target while inside the tornado
+                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                                end)
+                            end
+                        end
+                    end
+                    task.wait(0.2) -- Faster iteration for maximum chaos
+                end
+            end)
+        else
+            insaneBlobmanKickTarget = nil
+            notify("Silenced Hub", "Insane Blobman Kick Disabled.", 3)
+        end
+    end
+})
+
+InsaneGroup:CreateButton({
+    Name = "Set Insane Blobman Kick Target",
+    Flag = "Set Insane Blobman Kick Target",
+    Callback = function()
+        if selectedTarget then
+            insaneBlobmanKickTarget = selectedTarget
+            notify("Silenced Hub", "Insane Blobman Kick Target set to: " .. selectedTarget.Name, 3)
+        else
+            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
+        end
+    end,
+    Tooltip = "Sets the currently selected target for the Insane Blobman Kick."
+})
