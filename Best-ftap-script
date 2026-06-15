@@ -1,299 +1,11 @@
 -- ██████████████████████████████████████████████████████████████████
 -- █                                                                  █
 -- █   SILENCED HUB  -  FOR ROBLOX SCRIPTS & DEV                     █
--- █   Version: 2.0 INSANE  |  discord.gg/bdy4ssD3P4                 █
+-- █   Version: 3.0 INSANE  |  discord.gg/bdy4ssD3P4                 █
 -- █   Theme: Cyan/Black  |  Key Required                            █
 -- █                                                                  █
 -- ██████████████████████████████████████████████████████████████████
 
--- ============================================================
---  SERVICES & LOCALS (needed before key screen)
--- ============================================================
-local Players            = game:GetService("Players")
-local LocalPlayer        = Players.LocalPlayer
-local CoreGui            = game:GetService("CoreGui")
-local TweenService       = game:GetService("TweenService")
-local UserInputService   = game:GetService("UserInputService")
-local RunService         = game:GetService("RunService")
-local ReplicatedStorage  = game:GetService("ReplicatedStorage")
-local StarterGui         = game:GetService("StarterGui")
-local Debris             = game:GetService("Debris")
-
--- ============================================================
---  SILENCED HUB  -  KEY SYSTEM
---  Keys are given in the Discord server: discord.gg/bdy4ssD3P4
--- ============================================================
-
-local VALID_KEYS = {
-["SILENCED-RO4S-BLAT-UMRS"] = true,
-["SILENCED-GOSH-1LKR-B20J"] = true,
-["SILENCED-B9ZS-T5IF-G80X"] = true,
-["SILENCED-QEX8-KG8T-BMEY"] = true,
-["SILENCED-M2W3-D2OG-MVVX"] = true,
-["SILENCED-D45Z-R5CV-O8GV"] = true,
-["SILENCED-7SKF-W8JZ-0EX9"] = true,
-["SILENCED-VY9Z-BUCN-TJ3M"] = true,
-["SILENCED-BQE9-J5FH-3258"] = true,
-["SILENCED-R04K-IX0E-DCRX"] = true,
-["SILENCED-WO6L-QWJC-E3BX"] = true,
-["SILENCED-RWJF-AANU-4SHJ"] = true,
-["SILENCED-IOVH-8UQ8-LXU2"] = true,
-["SILENCED-ZPJL-BTA4-HLWD"] = true,
-["SILENCED-KP9U-YEM0-QPGI"] = true,
-["SILENCED-7H91-II8I-VEE7"] = true,
-["SILENCED-43WX-IS9B-W0ZN"] = true,
-["SILENCED-4Z3Y-5XRE-S3FX"] = true,
-["SILENCED-QLH8-T1CV-FUKA"] = true,
-["SILENCED-I37M-0O8M-WPJ5"] = true,
-["SILENCED-RUZ0-TOZ3-KH47"] = true,
-["SILENCED-BTHY-AV9W-IP07"] = true,
-["SILENCED-FWWG-6DMA-ROKM"] = true,
-["SILENCED-E01K-1W5Q-C6N5"] = true,
-["SILENCED-WRPF-TBOE-ZMV9"] = true,
-["SILENCED-228J-LSZH-KMBP"] = true,
-["SILENCED-NRYA-ZF5T-OY4N"] = true,
-["SILENCED-D7C8-IPB3-769N"] = true,
-["SILENCED-HA8Q-EVCY-QYAL"] = true,
-["SILENCED-A82H-TLJ0-2BC0"] = true,
-["SILENCED-XUOK-CT7O-35T8"] = true,
-["SILENCED-1B70-CC5C-0CWE"] = true,
-["SILENCED-X7EL-WK08-8586"] = true,
-["SILENCED-7GPR-R3T3-V91C"] = true,
-["SILENCED-YD6B-PP6I-WGD3"] = true,
-["SILENCED-PRCW-VKON-RFHC"] = true,
-["SILENCED-PUYM-P277-08KK"] = true,
-["SILENCED-RE76-QAO3-7VFT"] = true,
-["SILENCED-9HV3-VPSE-4I2X"] = true,
-["SILENCED-HM2E-D33B-HVE2"] = true,
-["SILENCED-GB30-LRQ1-KNHE"] = true,
-["SILENCED-AE6B-B7JA-QD2N"] = true,
-["SILENCED-BX2K-E4AM-W31K"] = true,
-["SILENCED-6D3L-19ZN-VRUU"] = true,
-["SILENCED-CD1U-91KJ-TCGD"] = true,
-["SILENCED-MG0F-QNS3-BSZG"] = true,
-["SILENCED-04RI-IKS9-FSKI"] = true,
-["SILENCED-RE4G-IUCJ-TF7N"] = true,
-["SILENCED-HRIQ-ALVQ-KDI7"] = true,
-["SILENCED-DTXV-412K-KWOX"] = true,
-["SILENCED-8DMU-F4GF-5EB9"] = true,
-["SILENCED-EBFD-CX9F-XH5J"] = true,
-["SILENCED-X4LI-LDUN-3F8N"] = true,
-["SILENCED-A480-XETW-2GJF"] = true,
-["SILENCED-5O2R-1A84-DGSI"] = true,
-["SILENCED-28F1-OSWO-SUPA"] = true,
-["SILENCED-MNCI-F37K-5MSC"] = true,
-["SILENCED-Z97V-J2KR-N9EJ"] = true,
-["SILENCED-KY9T-5XYP-4Q8X"] = true,
-["SILENCED-J0AZ-HTQU-9RYE"] = true,
-["SILENCED-ZY28-3OR7-DXG0"] = true,
-["SILENCED-720D-AF4X-F725"] = true,
-["SILENCED-9NYK-A6RE-XH9A"] = true,
-["SILENCED-YM0T-P56W-T4OJ"] = true,
-["SILENCED-LJ9L-3ZVY-R4KM"] = true,
-["SILENCED-9J0V-HH78-1BTH"] = true,
-["SILENCED-M08R-JBAV-7F6X"] = true,
-["SILENCED-CCBA-CMEX-P87Q"] = true,
-["SILENCED-CYW2-3LBQ-0G4D"] = true,
-["SILENCED-LT7X-P5UM-CYFP"] = true,
-["SILENCED-8AM0-B27O-ZNUQ"] = true,
-["SILENCED-LZR5-MYBF-RRC3"] = true,
-["SILENCED-XVIB-U2R0-696L"] = true,
-["SILENCED-Q7W1-VQG8-2IWI"] = true,
-["SILENCED-ES39-96VX-HJKF"] = true,
-["SILENCED-IRZL-Y2OO-89AB"] = true,
-["SILENCED-SXON-E5Z7-NJBF"] = true,
-["SILENCED-CL0G-MBBM-VFNO"] = true,
-["SILENCED-T4UU-7OYV-EHY3"] = true,
-["SILENCED-S3PS-XCYM-VHL0"] = true,
-["SILENCED-SO8H-3DVB-1Q2U"] = true,
-["SILENCED-91NB-GVOP-505T"] = true,
-["SILENCED-A95M-L0PR-SE4S"] = true,
-["SILENCED-W5AG-QDXK-WNRQ"] = true,
-["SILENCED-AVEU-OJE1-0FB6"] = true,
-["SILENCED-AKUL-G0Q6-MR4G"] = true,
-["SILENCED-97F6-V1EB-6YDX"] = true,
-["SILENCED-32FW-P0YP-EFAZ"] = true,
-["SILENCED-QPLC-J5QX-EQQT"] = true,
-["SILENCED-9EIU-X0R5-62FT"] = true,
-["SILENCED-ZM02-3GX0-3632"] = true,
-["SILENCED-LNJM-394G-6DEL"] = true,
-["SILENCED-MM5B-IHBX-X76Y"] = true,
-["SILENCED-3VKU-JSR6-VQZO"] = true,
-["SILENCED-6V3S-SW2M-O6H5"] = true,
-["SILENCED-3UD5-NN0Z-M50L"] = true,
-["SILENCED-MJTL-04ZP-P3I8"] = true,
-["SILENCED-B1RX-JB52-CVKK"] = true,
-["SILENCED-36XK-3OOA-XTKF"] = true,
-["SILENCED-TD3K-SW6M-TMIX"] = true,
-["SILENCED-A861-JPVH-YHMS"] = true,
-["SILENCED-6QGE-J68F-IDMB"] = true,
-["SILENCED-K4ED-YK9N-A2RP"] = true,
-["SILENCED-OBPH-69L9-C7KW"] = true,
-["SILENCED-4IZA-ZJPM-M152"] = true,
-["SILENCED-HAGZ-0G0L-9YRY"] = true,
-["SILENCED-NG82-G0JL-9OHL"] = true,
-["SILENCED-TBH4-UITG-S4UU"] = true,
-["SILENCED-G8A4-NLLB-0FJT"] = true,
-["SILENCED-4T20-CJOK-5IUG"] = true,
-["SILENCED-ZLN3-RGP2-PNWT"] = true,
-["SILENCED-AG0M-QUS6-TM10"] = true,
-["SILENCED-T2AG-BY78-PEKZ"] = true,
-["SILENCED-A8I8-UBPP-ICH4"] = true,
-["SILENCED-IN68-3D5R-NVVM"] = true,
-["SILENCED-DSDY-YFCK-0E8E"] = true,
-["SILENCED-CVW3-AHDW-D23J"] = true,
-["SILENCED-1W0E-F9K2-QIHU"] = true,
-["SILENCED-ONHO-RQP9-3XN3"] = true,
-["SILENCED-X7NU-P5PU-4JNG"] = true,
-["SILENCED-X6UN-VN1T-437X"] = true,
-["SILENCED-O09U-05JU-DJB5"] = true,
-["SILENCED-N54P-YXGF-413Z"] = true,
-["SILENCED-WVNY-M1YB-FYT5"] = true,
-["SILENCED-ZYN2-LK4S-K8IS"] = true,
-["SILENCED-P8Y9-ITE8-PAB1"] = true,
-["SILENCED-5FHD-RGR1-4W5P"] = true,
-["SILENCED-9TL2-TMVP-BVM2"] = true,
-["SILENCED-3AWO-UNSA-GCUI"] = true,
-["SILENCED-K09N-9T8A-CFA6"] = true,
-["SILENCED-ES5K-Y57Y-TYUS"] = true,
-["SILENCED-ZEF1-DTW5-G29A"] = true,
-["SILENCED-99O9-BC03-ZMVN"] = true,
-["SILENCED-T36R-4F05-YCWG"] = true,
-["SILENCED-HJGE-L6RB-QU52"] = true,
-["SILENCED-WO3H-0XXG-WHUY"] = true,
-["SILENCED-DCI2-2PX0-Q481"] = true,
-["SILENCED-WEP7-X2TA-XQQC"] = true,
-["SILENCED-WAAK-TCR1-OGJF"] = true,
-["SILENCED-T1MT-EFFD-DVKV"] = true,
-["SILENCED-0YSL-IZ9N-YV2I"] = true,
-["SILENCED-AHNZ-WMS0-YOAA"] = true,
-["SILENCED-Z48L-0AXU-VFMV"] = true,
-["SILENCED-SVWO-QP0R-BUUN"] = true,
-["SILENCED-OYY7-U7RX-MH00"] = true,
-["SILENCED-UZ7I-C61M-W484"] = true,
-["SILENCED-JBNL-D1NA-1Z8D"] = true,
-["SILENCED-Q5S7-EUF0-V1E5"] = true,
-["SILENCED-JTXE-XIWP-B1EV"] = true,
-["SILENCED-D0IU-AZKK-UM7H"] = true,
-["SILENCED-70A5-PDSZ-DPPY"] = true,
-["SILENCED-CW6L-T0SL-NR5M"] = true,
-["SILENCED-Z4J2-GLI9-5AN5"] = true,
-["SILENCED-HYHR-D8AC-OZVN"] = true,
-["SILENCED-Z46D-ZRVY-55ZH"] = true,
-["SILENCED-U585-SID4-NBG0"] = true,
-["SILENCED-3LNY-P99U-1C9U"] = true,
-["SILENCED-AFX2-QYVZ-B7OB"] = true,
-["SILENCED-EQHA-TG32-5IPR"] = true,
-["SILENCED-087F-H8A8-YSSY"] = true,
-["SILENCED-FDKA-XQ1N-4SJN"] = true,
-["SILENCED-CJ82-MGFR-OFWM"] = true,
-["SILENCED-XW5G-TQXJ-ZMFX"] = true,
-["SILENCED-P5ZP-GXVL-63TN"] = true,
-["SILENCED-Z2P2-1OAB-7UJZ"] = true,
-["SILENCED-TBH1-VR1I-6Y26"] = true,
-["SILENCED-OXVZ-2S3R-X9BV"] = true,
-["SILENCED-195W-5KLF-KZ89"] = true,
-["SILENCED-HB1Q-6IPI-2XYV"] = true,
-["SILENCED-TZWS-D89C-S5NN"] = true,
-["SILENCED-225G-AQ5K-0SS9"] = true,
-["SILENCED-JMAW-BINE-EFZO"] = true,
-["SILENCED-QPTA-QFO6-GVA5"] = true,
-["SILENCED-K3NG-CDSI-L2AO"] = true,
-["SILENCED-YLGU-ONBA-OX5S"] = true,
-["SILENCED-NLK0-CORT-AN87"] = true,
-["SILENCED-UEN6-LTDG-6DQF"] = true,
-["SILENCED-N0Q3-F2K9-WZA7"] = true,
-["SILENCED-IP08-BNSK-64YY"] = true,
-["SILENCED-LY7C-SP6T-PB7S"] = true,
-["SILENCED-7LDT-A3S7-RRKH"] = true,
-["SILENCED-CM5C-BZ0B-DRM6"] = true,
-["SILENCED-D2QN-I02D-RHPF"] = true,
-["SILENCED-U2JA-FB0G-6500"] = true,
-["SILENCED-8LPI-90Z8-45EC"] = true,
-["SILENCED-0PG1-JN8B-ILVA"] = true,
-["SILENCED-C1JT-TLTB-HYLK"] = true,
-["SILENCED-CGZP-U5SP-271S"] = true,
-["SILENCED-UET2-FP78-7J0T"] = true,
-["SILENCED-HTVY-6ODS-ULUU"] = true,
-["SILENCED-SCKA-A6UA-ECJS"] = true,
-["SILENCED-IH5T-5UFF-47HH"] = true,
-["SILENCED-XA0Y-4YXO-X7PA"] = true,
-["SILENCED-BV5B-SXT8-1813"] = true,
-["SILENCED-KFQZ-C570-WHGQ"] = true,
-["SILENCED-7I7N-VYEN-ZH7I"] = true,
-["SILENCED-5XTV-WOYG-YDZD"] = true,
-["SILENCED-8T48-AGYU-DRN1"] = true,
-["SILENCED-IMR8-0VP8-IBV4"] = true,
-["SILENCED-9BEB-5A8O-YF9X"] = true,
-}
-
-local DISCORD_LINK = "discord.gg/bdy4ssD3P4"
-local KEY_SAVE_FILE = "SilencedHub_Key.txt"
-
--- ============================================================
---  KEY SCREEN UI
--- ============================================================
-
-local keyVerified = false
-
-local function buildKeyScreen()
--- Remove any existing key screen
-if CoreGui:FindFirstChild("SilencedKeySystem") then
-CoreGui.SilencedKeySystem:Destroy()
-end
-
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "SilencedKeySystem"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = CoreGui
-
--- Dark overlay
-local Overlay = Instance.new("Frame")
-Overlay.Size = UDim2.new(1, 0, 1, 0)
-Overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-Overlay.BackgroundTransparency = 0.35
-Overlay.BorderSizePixel = 0
-Overlay.Parent = ScreenGui
-
--- Main card
-local Card = Instance.new("Frame")
-Card.Size = UDim2.new(0, 500, 0, 420)
-Card.Position = UDim2.new(0.5, -250, 0.5, -210)
-Card.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
-Card.BorderSizePixel = 0
-Card.Parent = ScreenGui
-
-local CardCorner = Instance.new("UICorner")
-CardCorner.CornerRadius = UDim.new(0, 14)
-CardCorner.Parent = Card
-
--- Cyan glow border stroke
-local CardStroke = Instance.new("UIStroke")
-CardStroke.Color = Color3.fromRGB(0, 210, 255)
-CardStroke.Thickness = 2
-CardStroke.Transparency = 0.15
-CardStroke.Parent = Card
-
--- Top accent bar
-local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 4)
-TopBar.BackgroundColor3 = Color3.fromRGB(0, 210, 255)
-TopBar.BorderSizePixel = 0
-TopBar.Parent = Card
-local TopBarCorner = Instance.new("UICorner")
-TopBarCorner.CornerRadius = UDim.new(0, 14)
-TopBarCorner.Parent = TopBar
-
--- Logo area (top) - with image
-local LogoImage = Instance.new("ImageLabel")
-LogoImage.Size = UDim2.new(0, 120, 0, 120)
-LogoImage.Position = UDim2.new(0.5, -60, 0, 5)
-LogoImage.BackgroundTransparency = 1
-LogoImage.Image = "rbxassetid://75799177950528" -- Roblox hosted, fallback to text if not available
-LogoImage.ScaleType = Enum.ScaleType.Fit
-LogoImage.Parent = Card
-pcall(function() LogoImage.Image = "rbxassetid://75799177950528" end)
 
 local LogoLabel = Instance.new("TextLabel")
 LogoLabel.Size = UDim2.new(1, 0, 0, 40)
@@ -503,14 +215,6 @@ end
 -- Key system bypassed
 keyVerified = true
 
--- ============================================================
---  KEY VERIFIED — LOAD THE HUB
--- ============================================================
-
--- Disable beam move script (safe)
-pcall(function()
-game.Players.LocalPlayer.PlayerScripts.CharacterAndBeamMove.Enabled = false
-end)
 
 -- Load Infinite Yield quietly
 loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
@@ -530,75 +234,6 @@ local function GetToggleState(flag) return ToggleStates[flag] or false end
 local Options = Library.Items or Library.Flags or {}
 local Toggles = Library.Flags or Library.Items or {}
 
--- ============================================================
---  WINDOW — SILENCED HUB BRANDING
--- ============================================================
-local Window = Library:CreateWindow({
-Title         = "SILENCED HUB V2",
-Theme         = "Void",
-ToggleKey     = Enum.KeyCode.RightShift,
-Transparency  = 0.18,
-ShowWatermark = { Enabled = true, Title = true, User = true, FPS = true, Duration = false, Ping = true },
-AutoSave      = true,
-ConfigFolder  = "SilencedHub_Config"
-})
-
--- ============================================================
---  TABS
--- ============================================================
-local Tabs = {
-Defense  = Window:CreateTab("defense",  true),
-Target   = Window:CreateTab("target",   true),
-Grab     = Window:CreateTab("grab",     true),
-Player   = Window:CreateTab("player",   true),
-Misc     = Window:CreateTab("misc",     true),
-Build    = Window:CreateTab("build",    true),
-Fun      = Window:CreateTab("fun",      true),
-Keybinds = Window:CreateTab("keybinds", true),
-Auras    = Window:CreateTab("auras",    true),
-Insane   = Window:CreateTab("insane",   true), -- NEW TAB
-}
-
--- ============================================================
---  SERVICES RE-BINDS
--- ============================================================
-local PS        = game:GetService("Players")
-local RS        = game:GetService("ReplicatedStorage")
-local R         = game:GetService("RunService")
-local Workspace = workspace
-local Player    = PS.LocalPlayer
-local Camera    = Workspace.CurrentCamera
-local CE        = RS:WaitForChild("CharacterEvents", 10)
-local BeingHeld = Player:WaitForChild("IsHeld", 10)
-local StruggleEvent = CE and CE:WaitForChild("Struggle")
-
--- ============================================================
---  NOTIFY HELPER
--- ============================================================
-local function notify(title, content, duration)
-Library:Notify({
-Title    = title   or "Silenced Hub",
-Content  = content or "",
-Duration = duration or 5,
-})
-end
-
--- ============================================================
---  STARTUP MESSAGE
--- ============================================================
-local function sendHubLoadedMessage()
-local message = " ⚙ SILENCED HUB V2 loaded — discord.gg/bdy4ssD3P4 "
-local sent = false
-pcall(function()
-local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-if chatEvents then
-local say = chatEvents:FindFirstChild("SayMessageRequest")
-if say and typeof(say.FireServer) == "function" then
-say:FireServer(message, "All")
-sent = true
-end
-end
-end)
 if not sent then
 pcall(function()
 StarterGui:SetCore("ChatMakeSystemMessage", {
@@ -617,98 +252,6 @@ sendHubLoadedMessage()
 notify("SILENCED HUB", "Welcome! Hub V2 loaded successfully. Stay silenced. 🤫", 5)
 end)
 
--- ============================================================
---  INSANE TAB (NEW FEATURES)
--- ============================================================
-local InsaneGroup = Tabs.Insane:CreateBlock({Name = "Insane Exploits", Side = "Left"})
-local InsaneExtra = Tabs.Insane:CreateBlock({Name = "Auras & More", Side = "Right"})
-
--- Infinite Reach
-InsaneGroup:CreateButton({
-    Name = "Enable Infinite Reach",
-    Flag = "Infinite Reach",
-    Callback = function()
-        local GameMt = getrawmetatable(game)
-        setreadonly(GameMt, false)
-        local OldIndex = GameMt.__index
-
-        GameMt.__index = function(Self, Key)
-            if not checkcaller() and Self then
-                if Key == "WalkSpeed" then
-                    return 16
-                elseif Key == "JumpPower" then
-                    return 24
-                end
-            end
-            return OldIndex(Self, Key)
-        end
-
-        local function Int()
-            for i,v in pairs(debug.getregistry()) do
-                if type(v) == "function" and not is_synapse_function(v) then
-                    local Values = debug.getupvalues(v)
-                    for a,b in pairs(Values) do
-                        if type(b) == "number" and b == 20 then
-                            debug.setupvalue(v, a, 30)
-                        end
-                    end
-
-                    local Constants = debug.getconstants(v)
-                    for Number,Value in pairs(Constants) do
-                        if type(Value) == "number" then
-                            if Value == 100 then
-                                debug.setconstant(v, Number, 1000)
-                            end
-                            if Value == 750 then
-                                debug.setconstant(v, Number, 1350)
-                            end
-                        end
-                    end
-                end
-            end
-        end
-
-        Int()
-        notify("Silenced Hub", "Infinite Reach Enabled! (Magnitude limit removed)", 5)
-    end,
-    Tooltip = "Removes grab distance limits and increases throw power."
-})
-
--- Super Throw (BodyVelocity Method)
-local superThrowEnabled = false
-local superThrowStrength = 850
-local superThrowConn = nil
-
-InsaneGroup:CreateToggle({
-    Name = "Super Throw (Physics)",
-    Flag = "Super Throw Physics",
-    Default = false,
-    Callback = function(Value)
-        superThrowEnabled = Value
-        if Value then
-            superThrowConn = Workspace.ChildAdded:Connect(function(model)
-                if model.Name == "GrabParts" then
-                    local partInfo = model:FindFirstChild("GrabPart")
-                    if not partInfo then return end
-
-                    local weld = partInfo:FindFirstChild("WeldConstraint")
-                    if not weld or not weld.Part1 then return end
-
-                    local part = weld.Part1
-                    local velocity = Instance.new("BodyVelocity")
-                    velocity.Parent = part
-
-                    model:GetPropertyChangedSignal("Parent"):Connect(function()
-                        if not model.Parent then
-                            if superThrowEnabled then
-                                velocity.MaxForce = Vector3.new(1e9, 1e9, 1e9)
-                                velocity.Velocity = Workspace.CurrentCamera.CFrame.LookVector * superThrowStrength
-                            else
-                                velocity.MaxForce = Vector3.zero
-                            end
-                            Debris:AddItem(velocity, 1)
-                        end
-                    end)
                 end
             end)
             notify("Silenced Hub", "Super Throw Physics Enabled!", 3)
@@ -801,6 +344,275 @@ InsaneExtra:CreateToggle({
         end
     end
 })
+
+
+-- NEW: Advanced Blobman Features, Anti-Cheater Counters, and Multi-Layered Anti-Kick
+
+                                    task.wait(0.5)
+                                end
+
+                                -- Teleport Blobman to target and fling
+                                pcall(function()
+                                    blobman:SetPrimaryPartCFrame(targetHRP.CFrame * CFrame.new(0, 5, 0))
+                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                                end)
+                            end
+                        end
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        else
+            blobmanKickTarget = nil
+            notify("Silenced Hub", "Blobman Anti-Cheater Kick Disabled.", 3)
+        end
+    end
+})
+
+InsaneGroup:CreateButton({
+    Name = "Set Blobman Kick Target",
+    Flag = "Set Blobman Kick Target",
+    Callback = function()
+        if selectedTarget then
+            blobmanKickTarget = selectedTarget
+            notify("Silenced Hub", "Blobman Kick Target set to: " .. selectedTarget.Name, 3)
+        else
+            notify("Silenced Hub", "No target selected. Please select a target first.", 3)
+        end
+    end,
+    Tooltip = "Sets the currently selected target as the Blobman Kick target."
+})
+
+-- Super Blobman Throw (Enhanced)
+local superBlobmanThrowEnabled = false
+local superBlobmanThrowStrength = 1500 -- Even higher strength
+
+InsaneGroup:CreateToggle({
+    Name = "Super Blobman Throw (Enhanced)",
+    Flag = "Super Blobman Throw Enhanced",
+    Default = false,
+    Callback = function(Value)
+        superBlobmanThrowEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Super Blobman Throw Enhanced Enabled!", 3)
+            task.spawn(function()
+                while superBlobmanThrowEnabled do
+                    local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                    if blobman and blobman:FindFirstChild("Head") then
+                        local head = blobman.Head
+                        local bv = head:FindFirstChild("SuperBlobmanBV")
+                        if not bv then
+                            bv = Instance.new("BodyVelocity")
+                            bv.Name = "SuperBlobmanBV"
+                            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                            bv.Parent = head
+                        end
+                        bv.Velocity = Workspace.CurrentCamera.CFrame.LookVector * superBlobmanThrowStrength
+                    end
+                    task.wait(0.01)
+                end
+                -- Clean up BodyVelocity when disabled
+                local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                if blobman and blobman:FindFirstChild("Head") then
+                    local bv = blobman.Head:FindFirstChild("SuperBlobmanBV")
+                    if bv then bv:Destroy() end
+                end
+            end)
+        else
+            notify("Silenced Hub", "Super Blobman Throw Enhanced Disabled.", 3)
+        end
+    end
+})
+
+InsaneGroup:CreateSlider({
+    Name = "Super Blobman Throw Strength",
+    Flag = "Super Blobman Throw Strength",
+    Min = 1000,
+    Max = 10000,
+    Default = 1500,
+    Callback = function(Value)
+        superBlobmanThrowStrength = Value
+    end
+})
+
+-- Multi-Layered Anti-Kick System
+local antiKickV3Enabled = false
+local kickBypassConnection = nil
+
+local function enableKickBypass()
+    local oldNamecall
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+
+    oldNamecall = mt.__namecall
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if method == "Kick" then
+            warn("Silenced Hub: Attempted kick detected and bypassed!")
+            return nil -- Bypass the kick
+        end
+        return oldNamecall(self, ...)
+    end)
+    setreadonly(mt, true)
+    notify("Silenced Hub", "Kick Bypass (Metatable Hook) Active!", 3)
+end
+
+local function disableKickBypass()
+    local mt = getrawmetatable(game)
+    setreadonly(mt, false)
+    if kickBypassConnection then
+        mt.__namecall = kickBypassConnection.oldNamecall
+        kickBypassConnection = nil
+    end
+    setreadonly(mt, true)
+    notify("Silenced Hub", "Kick Bypass (Metatable Hook) Disabled.", 3)
+end
+
+InsaneExtra:CreateToggle({
+    Name = "Anti Kick V3 (Metatable Hook)",
+    Flag = "Anti Kick V3",
+    Default = false,
+    Callback = function(Value)
+        antiKickV3Enabled = Value
+        if Value then
+            enableKickBypass()
+        else
+            disableKickBypass()
+        end
+    end
+})
+
+-- Enhanced Anti-Kick (PCLD Backup)
+-- The existing PCLD anti-kick is already good, but we can make it more aggressive
+-- by ensuring the item is always present and re-spawning it instantly if destroyed.
+
+local enhancedPCLDAntiKickEnabled = false
+local pcldBackupConnection = nil
+
+InsaneExtra:CreateToggle({
+    Name = "Enhanced PCLD Anti Kick",
+    Flag = "Enhanced PCLD Anti Kick",
+    Default = false,
+    Callback = function(Value)
+        enhancedPCLDAntiKickEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Enhanced PCLD Anti Kick Active!", 3)
+            task.spawn(function()
+                while enhancedPCLDAntiKickEnabled do
+                    local char = Player.Character
+                    local hrp  = char and char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        local fixedPCLD = autoScanPCLD() -- Existing function
+                        if fixedPCLD then
+                            local toysFolder = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
+                            local currentGold = toysFolder and toysFolder:FindFirstChild("SprayCanWD")
+
+                            if not currentGold then
+                                -- Re-spawn if missing
+                                local spawnPos = fixedPCLD.CFrame * CFrame.new(0, 2, 0)
+                                local MenuToys    = ReplicatedStorage:WaitForChild("MenuToys")
+                                local SpawnRemote = MenuToys:WaitForChild("SpawnToyRemoteFunction")
+                                SpawnRemote:InvokeServer("SprayCanWD", spawnPos, Vector3.zero)
+                                task.wait(0.5) -- Give it a moment to spawn
+                                toysFolder = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
+                                currentGold = toysFolder and toysFolder:FindFirstChild("SprayCanWD")
+
+                                if currentGold then
+                                    local holdPart = currentGold:FindFirstChild("HoldPart", 5)
+                                    for _, p in pairs(currentGold:GetDescendants()) do
+                                        if p:IsA("BasePart") then
+                                            p.Transparency = 0.5
+                                            p.Color = Color3.fromRGB(0, 210, 255)
+                                            p.Material = Enum.Material.Neon
+                                            p.CanCollide = false
+                                        end
+                                    end
+                                    pcall(function()
+                                        holdPart.HoldItemRemoteFunction:InvokeServer(currentGold, char)
+                                        task.wait(0.3)
+                                        holdPart.DropItemRemoteFunction:InvokeServer(currentGold, fixedPCLD.CFrame, Vector3.zero)
+                                    end)
+                                    notify("Silenced Hub", "PCLD Anti-Kick item re-spawned!", 2)
+                                end
+                            end
+
+                            if currentGold and fixedPCLD then
+                                currentGold:PivotTo(fixedPCLD.CFrame)
+                                local main = currentGold:FindFirstChild("Main") or currentGold:FindFirstChild("HoldPart")
+                                if main and main:IsA("BasePart") then
+                                    main.AssemblyLinearVelocity = Vector3.zero
+                                    main.AssemblyAngularVelocity = Vector3.zero
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        else
+            notify("Silenced Hub", "Enhanced PCLD Anti Kick Disabled.", 3)
+        end
+    end
+})
+
+-- Anti-Cheater Detection & Counter (General)
+local antiCheaterCounterEnabled = false
+local cheaterDetectionConnection = nil
+
+InsaneExtra:CreateToggle({
+    Name = "Auto Anti-Cheater Counter",
+    Flag = "Auto Anti-Cheater Counter",
+    Default = false,
+    Callback = function(Value)
+        antiCheaterCounterEnabled = Value
+        if Value then
+            notify("Silenced Hub", "Auto Anti-Cheater Counter Enabled!", 3)
+            cheaterDetectionConnection = Players.PlayerAdded:Connect(function(newPlayer)
+                newPlayer.CharacterAdded:Connect(function(char)
+                    task.spawn(function()
+                        while antiCheaterCounterEnabled and newPlayer.Parent do
+                            local hrp = char:FindFirstChild("HumanoidRootPart")
+                            if hrp then
+                                -- Example: Detect rapid CFrame changes (teleporting/speed hacking)
+                                local oldCFrame = hrp.CFrame
+                                task.wait(0.1)
+                                local newCFrame = hrp.CFrame
+                                if (oldCFrame.Position - newCFrame.Position).Magnitude > 50 then -- Threshold for teleport/speed
+                                    notify("Silenced Hub", "Detected potential cheater: " .. newPlayer.Name .. ". Countering!", 3)
+                                    -- Automatically set them as Blobman Kick target and activate
+                                    blobmanKickTarget = newPlayer
+                                    if not blobmanKickEnabled then
+                                        -- Temporarily enable blobman kick to counter
+                                        blobmanKickEnabled = true
+                                        task.wait(2) -- Let it run for a bit
+                                        blobmanKickEnabled = false
+                                    end
+                                end
+                            end
+                            task.wait(0.5)
+                        end
+                    end)
+                end)
+            end)
+        else
+            if cheaterDetectionConnection then cheaterDetectionConnection:Disconnect() end
+            notify("Silenced Hub", "Auto Anti-Cheater Counter Disabled.", 3)
+        end
+    end
+})
+
+-- Existing Shuriken Anti-Kick (ensure it\'s still active and considered a backup)
+-- No changes needed here, just noting its role in the multi-layered system.
+-- The previous script already included a robust Shuriken Anti-Kick.
+
+
+-- ============================================================
+--  ALL DONE — FINAL NOTIFY
+-- ============================================================
+task.wait(2)
+pcall(function()
+notify("SILENCED HUB", "✅ All systems loaded! discord.gg/bdy4ssD3P4 | RightShift to toggle UI.", 6)
+end)
 
 -- ============================================================
 --  ALL DONE — FINAL NOTIFY
