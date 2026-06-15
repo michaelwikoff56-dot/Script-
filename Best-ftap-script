@@ -628,7 +628,7 @@ end)
 --  INSANE TAB (OPTIMIZED KICKS)
 -- ============================================================
 
--- 1. Insane Grab Kick (Black Hole Trigger)
+-- 1. Insane Grab Kick (Black Hole Trigger / PCLD Desync)
 local insaneGrabKickEnabled = false
 local insaneGrabKickTarget = nil
 
@@ -647,19 +647,27 @@ InsaneGroup:CreateToggle({
                         local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
                         
                         if myHRP then
-                            -- Teleport to target to ensure grab
-                            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-                            task.wait(0.1)
+                                -- Teleport to target to ensure grab and desync PCLD
+                                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                                task.wait(0.1)
+
+                                -- Attempt to desync target's PCLD by rapidly changing their position
+                                local targetPCLD = Workspace:FindFirstChild(insaneGrabKickTarget.Name .. "PlayerCharacterLocationDetector")
+                                if targetPCLD then
+                                    pcall(function()
+                                        targetPCLD.CFrame = CFrame.new(math.random(-10000, 10000), math.random(1000, 5000), math.random(-10000, 10000))
+                                    end)
+                                end
                             
                             pcall(function()
                                 -- Grab the target
                                 ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
                                 task.wait(0.1)
                                 
-                                -- Apply extreme BodyVelocity to target to trigger anti-cheat "lagged in air"
+                                -- Apply extreme BodyVelocity to target to trigger anti-cheat "lagged in air" and "flying"
                                 local bv = Instance.new("BodyVelocity")
                                 bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                bv.Velocity = Vector3.new(0, 999999, 0) -- Shoot them straight up infinitely
+                                bv.Velocity = Vector3.new(math.random(-5000, 5000), 999999, math.random(-5000, 5000)) -- Shoot them erratically upwards
                                 bv.Parent = targetHRP
                                 
                                 -- Fling them while they have extreme velocity
@@ -729,18 +737,28 @@ InsaneGroup:CreateToggle({
                                 end
 
                                 pcall(function()
-                                    -- Teleport Blobman exactly inside the target to cause massive collision physics
-                                    blobman:SetPrimaryPartCFrame(targetHRP.CFrame)
+                                    -- Teleport Blobman and target's PCLD to a high, isolated location
+                                    local highCFrame = CFrame.new(targetHRP.Position.X, 5000, targetHRP.Position.Z)
+                                    blobman:SetPrimaryPartCFrame(highCFrame)
+                                    targetHRP.CFrame = highCFrame
+
+                                    local targetPCLD = Workspace:FindFirstChild(insaneBlobmanKickTarget.Name .. "PlayerCharacterLocationDetector")
+                                    if targetPCLD then
+                                        pcall(function()
+                                            targetPCLD.CFrame = highCFrame
+                                        end)
+                                    end
+                                    task.wait(0.1)
                                     
-                                    -- Apply erratic angular velocity to Blobman to create a "tornado" effect
+                                    -- Apply even more erratic angular and linear velocity to Blobman to create a "super tornado" effect
                                     for _, part in pairs(blobman:GetDescendants()) do
                                         if part:IsA("BasePart") then
-                                            part.AssemblyAngularVelocity = Vector3.new(math.random(-5000, 5000), math.random(-5000, 5000), math.random(-5000, 5000))
-                                            part.AssemblyLinearVelocity = Vector3.new(0, 5000, 0)
+                                            part.AssemblyAngularVelocity = Vector3.new(math.random(-10000, 10000), math.random(-10000, 10000), math.random(-10000, 10000))
+                                            part.AssemblyLinearVelocity = Vector3.new(math.random(-1000, 1000), 10000, math.random(-1000, 1000))
                                         end
                                     end
                                     
-                                    -- Fling the target while inside the tornado
+                                    -- Fling the target while inside the tornado to trigger "lagged in air" and "impossible flying"
                                     ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
                                 end)
                             end
@@ -768,4 +786,32 @@ InsaneGroup:CreateButton({
         end
     end,
     Tooltip = "Sets the currently selected target for the Insane Blobman Kick."
+})
+
+-- PCLD Nullifier (Anti-Anti-Cheat)
+local pcldNullifierEnabled = false
+local pcldNullifierConnection = nil
+
+DefenseGroup:CreateToggle({
+    Name = "PCLD Nullifier (Anti-Anti-Cheat)",
+    Flag = "PCLD Nullifier",
+    Default = false,
+    Callback = function(Value)
+        pcldNullifierEnabled = Value
+        if Value then
+            notify("Silenced Hub", "PCLD Nullifier Enabled!", 3)
+            pcldNullifierConnection = RunService.Heartbeat:Connect(function()
+                local myPCLD = Workspace:FindFirstChild(Player.Name .. "PlayerCharacterLocationDetector")
+                if myPCLD then
+                    -- Option 1: Destroy the PCLD (most aggressive)
+                    pcall(function() myPCLD:Destroy() end)
+                    -- Option 2: Teleport it far away (less aggressive, might still be detected)
+                    -- pcall(function() myPCLD.CFrame = CFrame.new(math.huge, math.huge, math.huge) end)
+                end
+            end)
+        else
+            if pcldNullifierConnection then pcldNullifierConnection:Disconnect() end
+            notify("Silenced Hub", "PCLD Nullifier Disabled.", 3)
+        end
+    end
 })
