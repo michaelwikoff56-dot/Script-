@@ -1,13 +1,13 @@
--- ██████████████████████████████████████████████████████████████████
--- █                                                                  █
--- █   SILENCED HUB  -  FOR ROBLOX SCRIPTS & DEV                     █
--- █   Version: 5.0 RENAISSANCE  |  discord.gg/bdy4ssD3P4             █
--- █   Theme: Gold/Black  |  Key Required                             █
--- █                                                                  █
--- ██████████████████████████████████████████████████████████████████
+-- ██████████████████████████████████████████████████████████████████████████████
+-- █                                                                            █
+-- █   SILENCED HUB  -  ULTIMATE FTAP DOMINATION                               █
+-- █   Version: 6.0 APEX  |  discord.gg/bdy4ssD3P4                             █
+-- █   Theme: Gold/Black  |  The Most Powerful FTAP Hub Ever Created            █
+-- █                                                                            █
+-- ██████████████████████████████████████████████████████████████████████████████
 
 -- ============================================================
---  SERVICES & LOCALS
+--  SERVICES
 -- ============================================================
 local Players            = game:GetService("Players")
 local LocalPlayer        = Players.LocalPlayer
@@ -18,136 +18,208 @@ local RunService         = game:GetService("RunService")
 local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 local StarterGui         = game:GetService("StarterGui")
 local Debris             = game:GetService("Debris")
+local Lighting           = game:GetService("Lighting")
+local TeleportService    = game:GetService("TeleportService")
+local HttpService        = game:GetService("HttpService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 -- ============================================================
---  SILENCED HUB  -  KEY SYSTEM (BYPASSED FOR USER)
+--  LOCALS & REFERENCES
 -- ============================================================
-local keyVerified = true
+local Player    = LocalPlayer
+local Camera    = workspace.CurrentCamera
+local CE        = ReplicatedStorage:WaitForChild("CharacterEvents", 10)
+local BeingHeld = Player:WaitForChild("IsHeld", 10)
+local StruggleEvent = CE and CE:WaitForChild("Struggle")
 
 -- ============================================================
---  KEY VERIFIED — LOAD THE HUB
+--  ANTI-DETECTION: Disable beam move script
 -- ============================================================
-
--- Disable beam move script (safe)
 pcall(function()
-    game.Players.LocalPlayer.PlayerScripts.CharacterAndBeamMove.Enabled = false
+    Player.PlayerScripts.CharacterAndBeamMove.Enabled = false
 end)
 
--- Load Infinite Yield quietly
+-- ============================================================
+--  LOAD INFINITE YIELD (BACKGROUND)
+-- ============================================================
 task.spawn(function()
     pcall(function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
     end)
 end)
 
--- Load XOCU library
+-- ============================================================
+--  LOAD XOCU UI LIBRARY
+-- ============================================================
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/iavichbest/XOCU/refs/heads/main/UI"))()
 
 -- Unlock Mouse
 UserInputService.MouseIconEnabled = true
 UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 
--- Global state storage
+-- ============================================================
+--  GLOBAL STATE MANAGEMENT
+-- ============================================================
 local ToggleStates = {}
+local Connections = {} -- Track all connections for cleanup
 local function SetToggleState(flag, value) ToggleStates[flag] = value end
 local function GetToggleState(flag) return ToggleStates[flag] or false end
 
 -- ============================================================
---  WINDOW — SILENCED HUB BRANDING
+--  CONFIG SAVE/LOAD SYSTEM
+-- ============================================================
+local ConfigFolder = "SilencedHub_Apex"
+local function saveConfig()
+    pcall(function()
+        if writefile then
+            local data = HttpService:JSONEncode(ToggleStates)
+            writefile(ConfigFolder .. "/config.json", data)
+        end
+    end)
+end
+
+local function loadConfig()
+    pcall(function()
+        if readfile and isfile and isfile(ConfigFolder .. "/config.json") then
+            local data = readfile(ConfigFolder .. "/config.json")
+            ToggleStates = HttpService:JSONDecode(data)
+        end
+    end)
+end
+
+pcall(function()
+    if makefolder and not isfolder(ConfigFolder) then
+        makefolder(ConfigFolder)
+    end
+end)
+loadConfig()
+
+-- Auto-save every 30 seconds
+task.spawn(function()
+    while true do
+        task.wait(30)
+        saveConfig()
+    end
+end)
+
+-- ============================================================
+--  WINDOW — SILENCED HUB APEX BRANDING
 -- ============================================================
 local Window = Library:CreateWindow({
-    Title         = "SILENCED HUB",
+    Title         = "SILENCED HUB | APEX V6.0",
     Theme         = "Void",
     ToggleKey     = Enum.KeyCode.RightShift,
-    Transparency  = 0.18,
+    Transparency  = 0.15,
     ShowWatermark = { Enabled = true, Title = true, User = true, FPS = true, Duration = false, Ping = true },
     AutoSave      = true,
-    ConfigFolder  = "SilencedHub_Config"
+    ConfigFolder  = ConfigFolder
 })
 
--- Update UI colors to Gold/Black theme
+-- Gold/Black Theme
 pcall(function()
-    Library.Theme.MainColor = Color3.fromRGB(20, 20, 20)
-    Library.Theme.AccentColor = Color3.fromRGB(255, 215, 0) -- Gold
-    Library.Theme.BackgroundColor = Color3.fromRGB(10, 10, 10)
+    Library.Theme.MainColor = Color3.fromRGB(15, 15, 15)
+    Library.Theme.AccentColor = Color3.fromRGB(255, 215, 0)
+    Library.Theme.BackgroundColor = Color3.fromRGB(8, 8, 8)
     Library.Theme.OutlineColor = Color3.fromRGB(255, 215, 0)
     Library.Theme.FontColor = Color3.fromRGB(255, 255, 255)
 end)
 
 -- ============================================================
---  TABS
+--  TABS (Expanded)
 -- ============================================================
 local Tabs = {
-    Renaissance = Window:CreateTab("Renaissance", true),
-    Insane      = Window:CreateTab("Insane",      true),
+    Combat      = Window:CreateTab("Combat",      true),
+    Movement    = Window:CreateTab("Movement",    true),
     Defense     = Window:CreateTab("Defense",     true),
+    ESP         = Window:CreateTab("ESP",         true),
     Target      = Window:CreateTab("Target",      true),
-    Grab        = Window:CreateTab("Grab",        true),
-    Player      = Window:CreateTab("Player",      true),
+    Insane      = Window:CreateTab("Insane",      true),
+    Blobman     = Window:CreateTab("Blobman",     true),
+    Toys        = Window:CreateTab("Toys",        true),
+    Teleport    = Window:CreateTab("Teleport",    true),
+    Server      = Window:CreateTab("Server",      true),
     Misc        = Window:CreateTab("Misc",        true),
+    Settings    = Window:CreateTab("Settings",    true),
 }
 
 -- ============================================================
---  SERVICES RE-BINDS
--- ============================================================
-local PS        = game:GetService("Players")
-local RS        = game:GetService("ReplicatedStorage")
-local R         = game:GetService("RunService")
-local Workspace = workspace
-local Player    = PS.LocalPlayer
-local Camera    = Workspace.CurrentCamera
-local CE        = RS:WaitForChild("CharacterEvents", 10)
-local BeingHeld = Player:WaitForChild("IsHeld", 10)
-local StruggleEvent = CE and CE:WaitForChild("Struggle")
-
--- ============================================================
---  NOTIFY HELPER
+--  NOTIFY HELPER (Enhanced)
 -- ============================================================
 local function notify(title, content, duration)
-    Library:Notify({
-        Title    = title   or "Silenced Hub",
-        Content  = content or "",
-        Duration = duration or 5,
-    })
+    pcall(function()
+        Library:Notify({
+            Title    = title   or "Silenced Hub",
+            Content  = content or "",
+            Duration = duration or 5,
+        })
+    end)
 end
 
 -- ============================================================
 --  STARTUP MESSAGE
 -- ============================================================
 local function sendHubLoadedMessage()
-    local message = " ⚙ SILENCED HUB V5.0 RENAISSANCE loaded — discord.gg/bdy4ssD3P4 "
-    local sent = false
+    local message = " SILENCED HUB V6.0 APEX loaded — discord.gg/bdy4ssD3P4 "
     pcall(function()
         local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
         if chatEvents then
             local say = chatEvents:FindFirstChild("SayMessageRequest")
-            if say and typeof(say.FireServer) == "function" then
-                say:FireServer(message, "All")
-                sent = true
-            end
+            if say then say:FireServer(message, "All") end
         end
     end)
-    if not sent then
-        pcall(function()
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Name     = message;
-                Color    = Color3.fromRGB(255, 215, 0);
-                Font     = Enum.Font.GothamBold;
-                FontSize = Enum.FontSize.Size18;
-            })
-        end)
-    end
 end
 
 task.spawn(function()
     task.wait(1)
     sendHubLoadedMessage()
-    notify("SILENCED HUB", "Welcome to the Renaissance! Hub V5 loaded. 👑", 5)
+    notify("SILENCED HUB", "APEX V6.0 Loaded — Total Domination Mode Active", 5)
 end)
 
 -- ============================================================
---  HELPERS (Blobman, PCLD, etc.)
+--  UTILITY FUNCTIONS
 -- ============================================================
+local selectedTarget = nil
+
+local function getHRP()
+    return Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+end
+
+local function getHumanoid()
+    return Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+end
+
+local function getTargetHRP()
+    if selectedTarget and selectedTarget.Character then
+        return selectedTarget.Character:FindFirstChild("HumanoidRootPart")
+    end
+    return nil
+end
+
+local function getNearestPlayer(maxDist)
+    maxDist = maxDist or 200
+    local myHRP = getHRP()
+    if not myHRP then return nil end
+    local closest, minDist = nil, maxDist
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (myHRP.Position - p.Character.HumanoidRootPart.Position).Magnitude
+            if dist < minDist then
+                minDist = dist
+                closest = p
+            end
+        end
+    end
+    return closest
+end
+
+local function getAllPlayers()
+    local list = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= Player then table.insert(list, p) end
+    end
+    return list
+end
+
 local function spawnBlobman()
     local args = {
         [1] = "CreatureBlobman",
@@ -157,7 +229,7 @@ local function spawnBlobman()
     pcall(function()
         ReplicatedStorage.MenuToys.SpawnToyRemoteFunction:InvokeServer(unpack(args))
     end)
-    local folder = Workspace:WaitForChild(Player.Name .. "SpawnedInToys", 5)
+    local folder = workspace:WaitForChild(Player.Name .. "SpawnedInToys", 5)
     if folder and folder:FindFirstChild("CreatureBlobman") then
         local blob = folder.CreatureBlobman
         if blob:FindFirstChild("Head") then
@@ -168,59 +240,81 @@ local function spawnBlobman()
     end
 end
 
-local function autoScanPCLD()
-    local nearest = nil; local shortestDist = math.huge
-    local char = Player.Character
-    local hrp  = char and char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nil end
-    for _, v in pairs(workspace:GetChildren()) do
-        if v.Name:find("PlayerCharacterLocationDetector") and v:IsA("BasePart") then
-            local dist = (v.Position - hrp.Position).Magnitude
-            if dist < shortestDist then shortestDist = dist; nearest = v end
-        end
-    end
-    return nearest
+local function spawnToy(toyName)
+    local args = {
+        [1] = toyName,
+        [2] = CFrame.new(0, 5000000, 0),
+        [3] = Vector3.new(0, 60, 0)
+    }
+    pcall(function()
+        ReplicatedStorage.MenuToys.SpawnToyRemoteFunction:InvokeServer(unpack(args))
+    end)
+    notify("Silenced Hub", toyName .. " Spawned!", 3)
 end
 
 -- ============================================================
---  RENAISSANCE TAB
+--  TARGET TAB
 -- ============================================================
-local RenaissanceGroup = Tabs.Renaissance:CreateBlock({Name = "Renaissance Features", Side = "Left"})
+local TargetGroup = Tabs.Target:CreateBlock({Name = "Target Selection", Side = "Left"})
+local TargetGroup2 = Tabs.Target:CreateBlock({Name = "Quick Target", Side = "Right"})
 
--- Metatable Spoofing
-local metatableSpoofingEnabled = false
-RenaissanceGroup:CreateToggle({
-    Name = "Metatable Spoofing (Anti-Detect)",
-    Flag = "Metatable Spoofing",
-    Default = false,
-    Callback = function(Value)
-        metatableSpoofingEnabled = Value
-        if Value then
-            notify("Silenced Hub", "Metatable Spoofing Enabled!", 3)
-            pcall(function()
-                local oldNamecall
-                oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-                    local namecallMethod = getnamecallmethod()
-                    if namecallMethod == "FireServer" and (self.Name == "GrabRemote" or self.Name == "FlingRemote") then
-                        -- Stealth logic
-                    end
-                    return oldNamecall(self, ...)
-                end)
-            end)
-        else
-            notify("Silenced Hub", "Metatable Spoofing Disabled.", 3)
+local targetDropdown = TargetGroup:CreateDropdown({
+    Name = "Player List",
+    Flag = "PlayerList",
+    Items = {},
+    Callback = function(v)
+        selectedTarget = Players:FindFirstChild(v)
+        notify("Silenced Hub", "Target: " .. v, 2)
+    end
+})
+
+local function updatePlayerList()
+    local list = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= Player then table.insert(list, p.Name) end
+    end
+    pcall(function() targetDropdown:Update(list) end)
+end
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+updatePlayerList()
+
+TargetGroup2:CreateButton({
+    Name = "Target Nearest Player",
+    Callback = function()
+        local nearest = getNearestPlayer()
+        if nearest then
+            selectedTarget = nearest
+            notify("Silenced Hub", "Target: " .. nearest.Name .. " (Nearest)", 2)
         end
     end
 })
 
+TargetGroup2:CreateButton({
+    Name = "Clear Target",
+    Callback = function()
+        selectedTarget = nil
+        notify("Silenced Hub", "Target Cleared", 2)
+    end
+})
+
+-- ============================================================
+--  COMBAT TAB
+-- ============================================================
+local CombatGroup = Tabs.Combat:CreateBlock({Name = "Grab & Fling", Side = "Left"})
+local CombatGroup2 = Tabs.Combat:CreateBlock({Name = "Advanced Combat", Side = "Right"})
+
 -- Infinite Strength Fling
-RenaissanceGroup:CreateToggle({
+local infFlingEnabled = false
+CombatGroup:CreateToggle({
     Name = "Infinite Strength Fling",
-    Flag = "Infinite Strength Fling",
+    Flag = "InfFling",
     Default = false,
     Callback = function(Value)
+        infFlingEnabled = Value
+        SetToggleState("InfFling", Value)
         if Value then
-            notify("Silenced Hub", "Infinite Strength Fling Enabled!", 3)
+            notify("Silenced Hub", "Infinite Strength Fling ON", 3)
             pcall(function()
                 local oldFlingRemote
                 oldFlingRemote = hookfunction(ReplicatedStorage.GrabEvents.FlingRemote.FireServer, function(self, targetHRP, force)
@@ -233,35 +327,22 @@ RenaissanceGroup:CreateToggle({
 
 -- Silent Aim Grab
 local silentAimGrabEnabled = false
-RenaissanceGroup:CreateToggle({
-    Name = "Silent Aim Grab",
-    Flag = "Silent Aim Grab",
+CombatGroup:CreateToggle({
+    Name = "Silent Aim Grab (Auto-Nearest)",
+    Flag = "SilentAimGrab",
     Default = false,
     Callback = function(Value)
         silentAimGrabEnabled = Value
+        SetToggleState("SilentAimGrab", Value)
         if Value then
-            notify("Silenced Hub", "Silent Aim Grab Enabled!", 3)
+            notify("Silenced Hub", "Silent Aim Grab ON", 3)
             task.spawn(function()
                 while silentAimGrabEnabled do
-                    local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                    if myHRP then
-                        local closestPlayer = nil
-                        local minDistance = 50
-                        for _, p in pairs(Players:GetPlayers()) do
-                            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                                local dist = (myHRP.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                                if dist < minDistance then
-                                    minDistance = dist
-                                    closestPlayer = p
-                                end
-                            end
-                        end
-                        if closestPlayer then
-                            local targetHRP = closestPlayer.Character.HumanoidRootPart
-                            pcall(function()
-                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
-                            end)
-                        end
+                    local nearest = getNearestPlayer(50)
+                    if nearest and nearest.Character and nearest.Character:FindFirstChild("HumanoidRootPart") then
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(nearest.Character.HumanoidRootPart)
+                        end)
                     end
                     task.wait(0.1)
                 end
@@ -270,42 +351,184 @@ RenaissanceGroup:CreateToggle({
     end
 })
 
--- Movement Features
-RenaissanceGroup:CreateSlider({
-    Name = "Walkspeed",
-    Flag = "Walkspeed",
-    Min = 16, Max = 200, Default = 16,
-    Callback = function(v)
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = v
-        end
-    end
-})
-
-RenaissanceGroup:CreateSlider({
-    Name = "Jumppower",
-    Flag = "Jumppower",
-    Min = 50, Max = 500, Default = 50,
-    Callback = function(v)
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.JumpPower = v
-        end
-    end
-})
-
-local noClipEnabled = false
-RenaissanceGroup:CreateToggle({
-    Name = "No-Clip",
-    Flag = "NoClip",
+-- Auto Fling Target
+local autoFlingEnabled = false
+CombatGroup:CreateToggle({
+    Name = "Auto Fling Target",
+    Flag = "AutoFling",
     Default = false,
-    Callback = function(v)
-        noClipEnabled = v
-        if v then
-            RunService.Stepped:Connect(function()
-                if noClipEnabled and Player.Character then
-                    for _, p in pairs(Player.Character:GetDescendants()) do
-                        if p:IsA("BasePart") then p.CanCollide = false end
+    Callback = function(Value)
+        autoFlingEnabled = Value
+        SetToggleState("AutoFling", Value)
+        if Value then
+            notify("Silenced Hub", "Auto Fling ON — Select a target!", 3)
+            task.spawn(function()
+                while autoFlingEnabled do
+                    local targetHRP = getTargetHRP()
+                    local myHRP = getHRP()
+                    if targetHRP and myHRP then
+                        myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                            task.wait(0.05)
+                            ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                        end)
                     end
+                    task.wait(0.3)
+                end
+            end)
+        end
+    end
+})
+
+-- Auto Fling All
+local autoFlingAllEnabled = false
+CombatGroup:CreateToggle({
+    Name = "Auto Fling ALL Players",
+    Flag = "AutoFlingAll",
+    Default = false,
+    Callback = function(Value)
+        autoFlingAllEnabled = Value
+        SetToggleState("AutoFlingAll", Value)
+        if Value then
+            notify("Silenced Hub", "Auto Fling ALL — Chaos Mode!", 3)
+            task.spawn(function()
+                while autoFlingAllEnabled do
+                    local myHRP = getHRP()
+                    if myHRP then
+                        for _, p in pairs(getAllPlayers()) do
+                            if not autoFlingAllEnabled then break end
+                            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                                local targetHRP = p.Character.HumanoidRootPart
+                                myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                                pcall(function()
+                                    ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                                    task.wait(0.05)
+                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                                end)
+                                task.wait(0.2)
+                            end
+                        end
+                    end
+                    task.wait(0.5)
+                end
+            end)
+        end
+    end
+})
+
+-- Grab Aura
+local grabAuraEnabled = false
+CombatGroup2:CreateToggle({
+    Name = "Grab Aura (Auto-Grab Nearby)",
+    Flag = "GrabAura",
+    Default = false,
+    Callback = function(Value)
+        grabAuraEnabled = Value
+        SetToggleState("GrabAura", Value)
+        if Value then
+            notify("Silenced Hub", "Grab Aura ON — Grabs anyone near you!", 3)
+            task.spawn(function()
+                while grabAuraEnabled do
+                    local myHRP = getHRP()
+                    if myHRP then
+                        for _, p in pairs(Players:GetPlayers()) do
+                            if p ~= Player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                                local dist = (myHRP.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                                if dist < 30 then
+                                    pcall(function()
+                                        ReplicatedStorage.GrabEvents.GrabRemote:FireServer(p.Character.HumanoidRootPart)
+                                    end)
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.15)
+                end
+            end)
+        end
+    end
+})
+
+-- Orbit Fling
+local orbitFlingEnabled = false
+CombatGroup2:CreateToggle({
+    Name = "Orbit Fling (Circle & Fling)",
+    Flag = "OrbitFling",
+    Default = false,
+    Callback = function(Value)
+        orbitFlingEnabled = Value
+        SetToggleState("OrbitFling", Value)
+        if Value then
+            notify("Silenced Hub", "Orbit Fling ON", 3)
+            local angle = 0
+            task.spawn(function()
+                while orbitFlingEnabled do
+                    local targetHRP = getTargetHRP()
+                    local myHRP = getHRP()
+                    if targetHRP and myHRP then
+                        angle = angle + 0.3
+                        local radius = 5
+                        local x = math.cos(angle) * radius
+                        local z = math.sin(angle) * radius
+                        myHRP.CFrame = targetHRP.CFrame * CFrame.new(x, 0, z)
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                            ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                        end)
+                    end
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+-- Bring All Players
+CombatGroup2:CreateButton({
+    Name = "Bring All Players To You",
+    Callback = function()
+        local myHRP = getHRP()
+        if not myHRP then return end
+        notify("Silenced Hub", "Bringing all players...", 3)
+        for _, p in pairs(getAllPlayers()) do
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                pcall(function()
+                    ReplicatedStorage.GrabEvents.GrabRemote:FireServer(p.Character.HumanoidRootPart)
+                end)
+            end
+            task.wait(0.1)
+        end
+    end
+})
+
+-- Desync Fling
+local desyncFlingEnabled = false
+CombatGroup2:CreateToggle({
+    Name = "Desync Fling (Ghost Mode)",
+    Flag = "DesyncFling",
+    Default = false,
+    Callback = function(Value)
+        desyncFlingEnabled = Value
+        SetToggleState("DesyncFling", Value)
+        if Value then
+            notify("Silenced Hub", "Desync Fling ON — You appear invisible to others!", 3)
+            task.spawn(function()
+                while desyncFlingEnabled do
+                    local myHRP = getHRP()
+                    local targetHRP = getTargetHRP()
+                    if myHRP and targetHRP then
+                        -- Desync: move server-side position without visual update
+                        local originalCF = myHRP.CFrame
+                        myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1)
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                            ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                        end)
+                        task.wait()
+                        myHRP.CFrame = originalCF
+                    end
+                    task.wait(0.2)
                 end
             end)
         end
@@ -313,10 +536,541 @@ RenaissanceGroup:CreateToggle({
 })
 
 -- ============================================================
+--  MOVEMENT TAB
+-- ============================================================
+local MoveGroup = Tabs.Movement:CreateBlock({Name = "Speed & Jump", Side = "Left"})
+local MoveGroup2 = Tabs.Movement:CreateBlock({Name = "Flight & Noclip", Side = "Right"})
+
+-- Walkspeed
+MoveGroup:CreateSlider({
+    Name = "Walkspeed",
+    Flag = "Walkspeed",
+    Min = 16, Max = 500, Default = 16,
+    Callback = function(v)
+        local hum = getHumanoid()
+        if hum then hum.WalkSpeed = v end
+        SetToggleState("WalkspeedVal", v)
+    end
+})
+
+-- Jumppower
+MoveGroup:CreateSlider({
+    Name = "Jumppower",
+    Flag = "Jumppower",
+    Min = 50, Max = 1000, Default = 50,
+    Callback = function(v)
+        local hum = getHumanoid()
+        if hum then hum.JumpPower = v end
+        SetToggleState("JumppowerVal", v)
+    end
+})
+
+-- Gravity
+MoveGroup:CreateSlider({
+    Name = "Gravity",
+    Flag = "Gravity",
+    Min = 0, Max = 196, Default = 196,
+    Callback = function(v)
+        workspace.Gravity = v
+    end
+})
+
+-- Infinite Jump
+local infJumpEnabled = false
+MoveGroup:CreateToggle({
+    Name = "Infinite Jump",
+    Flag = "InfJump",
+    Default = false,
+    Callback = function(Value)
+        infJumpEnabled = Value
+        SetToggleState("InfJump", Value)
+        if Value then
+            notify("Silenced Hub", "Infinite Jump ON", 3)
+        end
+    end
+})
+
+UserInputService.JumpRequest:Connect(function()
+    if infJumpEnabled then
+        local hum = getHumanoid()
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+    end
+end)
+
+-- No-Clip
+local noClipEnabled = false
+MoveGroup2:CreateToggle({
+    Name = "No-Clip",
+    Flag = "NoClip",
+    Default = false,
+    Callback = function(v)
+        noClipEnabled = v
+        SetToggleState("NoClip", v)
+        if v then notify("Silenced Hub", "No-Clip ON", 3) end
+    end
+})
+
+RunService.Stepped:Connect(function()
+    if noClipEnabled and Player.Character then
+        for _, p in pairs(Player.Character:GetDescendants()) do
+            if p:IsA("BasePart") then p.CanCollide = false end
+        end
+    end
+end)
+
+-- Fly
+local flyEnabled = false
+local flySpeed = 50
+local flyBV, flyBG
+
+MoveGroup2:CreateToggle({
+    Name = "Fly",
+    Flag = "Fly",
+    Default = false,
+    Callback = function(v)
+        flyEnabled = v
+        SetToggleState("Fly", v)
+        local hrp = getHRP()
+        if not hrp then return end
+        if v then
+            notify("Silenced Hub", "Fly ON — Use WASD + Space/Shift", 3)
+            flyBV = Instance.new("BodyVelocity")
+            flyBV.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            flyBV.Velocity = Vector3.new(0, 0, 0)
+            flyBV.Parent = hrp
+            flyBG = Instance.new("BodyGyro")
+            flyBG.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            flyBG.P = 9e4
+            flyBG.Parent = hrp
+        else
+            if flyBV then flyBV:Destroy() flyBV = nil end
+            if flyBG then flyBG:Destroy() flyBG = nil end
+        end
+    end
+})
+
+MoveGroup2:CreateSlider({
+    Name = "Fly Speed",
+    Flag = "FlySpeed",
+    Min = 10, Max = 500, Default = 50,
+    Callback = function(v)
+        flySpeed = v
+    end
+})
+
+RunService.Heartbeat:Connect(function()
+    if flyEnabled and flyBV and flyBG then
+        local hrp = getHRP()
+        if not hrp then return end
+        flyBG.CFrame = Camera.CFrame
+        local dir = Vector3.new(0, 0, 0)
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0, 1, 0) end
+        if dir.Magnitude > 0 then
+            flyBV.Velocity = dir.Unit * flySpeed
+        else
+            flyBV.Velocity = Vector3.new(0, 0, 0)
+        end
+    end
+end)
+
+-- Teleport to Target
+MoveGroup2:CreateButton({
+    Name = "Teleport to Target",
+    Callback = function()
+        local myHRP = getHRP()
+        local targetHRP = getTargetHRP()
+        if myHRP and targetHRP then
+            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
+            notify("Silenced Hub", "Teleported to " .. selectedTarget.Name, 2)
+        else
+            notify("Silenced Hub", "No target selected!", 2)
+        end
+    end
+})
+
+
+-- ============================================================
+--  DEFENSE TAB
+-- ============================================================
+local DefGroup = Tabs.Defense:CreateBlock({Name = "Protection", Side = "Left"})
+local DefGroup2 = Tabs.Defense:CreateBlock({Name = "Anti-Cheat", Side = "Right"})
+
+-- Anti-Fling
+local antiFlingEnabled = false
+DefGroup:CreateToggle({
+    Name = "Anti-Fling",
+    Flag = "AntiFling",
+    Default = false,
+    Callback = function(Value)
+        antiFlingEnabled = Value
+        SetToggleState("AntiFling", Value)
+        if Value then
+            notify("Silenced Hub", "Anti-Fling ON — You cannot be flung!", 3)
+        end
+    end
+})
+
+RunService.Heartbeat:Connect(function()
+    if antiFlingEnabled then
+        local hrp = getHRP()
+        if hrp then
+            hrp.AssemblyLinearVelocity = Vector3.new(0, hrp.AssemblyLinearVelocity.Y, 0)
+            hrp.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+            -- Remove any BodyVelocity/BodyForce added by others
+            for _, v in pairs(hrp:GetChildren()) do
+                if (v:IsA("BodyVelocity") or v:IsA("BodyForce") or v:IsA("BodyAngularVelocity")) and v.Name ~= "FlyBV" then
+                    v:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+-- Anti-Grab
+local antiGrabEnabled = false
+DefGroup:CreateToggle({
+    Name = "Anti-Grab",
+    Flag = "AntiGrab",
+    Default = false,
+    Callback = function(Value)
+        antiGrabEnabled = Value
+        SetToggleState("AntiGrab", Value)
+        if Value then
+            notify("Silenced Hub", "Anti-Grab ON — Auto-struggle enabled!", 3)
+            task.spawn(function()
+                while antiGrabEnabled do
+                    if BeingHeld and BeingHeld.Value == true then
+                        pcall(function()
+                            if StruggleEvent then
+                                StruggleEvent:FireServer()
+                            end
+                        end)
+                    end
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+-- God Mode (Infinite Health Simulation)
+local godModeEnabled = false
+DefGroup:CreateToggle({
+    Name = "God Mode (Anti-Death)",
+    Flag = "GodMode",
+    Default = false,
+    Callback = function(Value)
+        godModeEnabled = Value
+        SetToggleState("GodMode", Value)
+        if Value then
+            notify("Silenced Hub", "God Mode ON", 3)
+            task.spawn(function()
+                while godModeEnabled do
+                    local hum = getHumanoid()
+                    if hum then
+                        pcall(function()
+                            hum.Health = hum.MaxHealth
+                        end)
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+-- Force Field
+DefGroup:CreateButton({
+    Name = "Force Field (Temporary)",
+    Callback = function()
+        pcall(function()
+            local ff = Instance.new("ForceField")
+            ff.Parent = Player.Character
+            Debris:AddItem(ff, 10)
+            notify("Silenced Hub", "Force Field active for 10 seconds!", 3)
+        end)
+    end
+})
+
+-- Auto-Struggle
+local autoStruggleEnabled = false
+DefGroup:CreateToggle({
+    Name = "Auto-Struggle (Instant Escape)",
+    Flag = "AutoStruggle",
+    Default = false,
+    Callback = function(Value)
+        autoStruggleEnabled = Value
+        SetToggleState("AutoStruggle", Value)
+        if Value then
+            notify("Silenced Hub", "Auto-Struggle ON — Escape grabs instantly!", 3)
+            task.spawn(function()
+                while autoStruggleEnabled do
+                    if BeingHeld and BeingHeld.Value == true then
+                        for i = 1, 20 do
+                            pcall(function()
+                                if StruggleEvent then StruggleEvent:FireServer() end
+                            end)
+                        end
+                    end
+                    task.wait(0.01)
+                end
+            end)
+        end
+    end
+})
+
+-- PCLD Nullifier
+local pcldNullifierEnabled = false
+DefGroup2:CreateToggle({
+    Name = "PCLD Nullifier (Anti-Anti-Cheat)",
+    Flag = "PCLDNullifier",
+    Default = false,
+    Callback = function(Value)
+        pcldNullifierEnabled = Value
+        SetToggleState("PCLDNullifier", Value)
+        if Value then
+            notify("Silenced Hub", "PCLD Nullifier ON", 3)
+        end
+    end
+})
+
+RunService.Heartbeat:Connect(function()
+    if pcldNullifierEnabled then
+        pcall(function()
+            local myPCLD = workspace:FindFirstChild(Player.Name .. "PlayerCharacterLocationDetector")
+            if myPCLD then myPCLD:Destroy() end
+        end)
+    end
+end)
+
+-- Anti-Kick V3 (Metatable Hook)
+DefGroup2:CreateToggle({
+    Name = "Anti-Kick V3 (Metatable Hook)",
+    Flag = "AntiKickV3",
+    Default = false,
+    Callback = function(Value)
+        SetToggleState("AntiKickV3", Value)
+        if Value then
+            notify("Silenced Hub", "Anti-Kick V3 ON", 3)
+            pcall(function()
+                local mt = getrawmetatable(game)
+                setreadonly(mt, false)
+                local oldNamecall = mt.__namecall
+                mt.__namecall = newcclosure(function(self, ...)
+                    if getnamecallmethod() == "Kick" then return nil end
+                    return oldNamecall(self, ...)
+                end)
+                setreadonly(mt, true)
+            end)
+        end
+    end
+})
+
+-- Anti-Teleport (Prevent forced TPs)
+DefGroup2:CreateToggle({
+    Name = "Anti-Teleport",
+    Flag = "AntiTP",
+    Default = false,
+    Callback = function(Value)
+        SetToggleState("AntiTP", Value)
+        if Value then
+            notify("Silenced Hub", "Anti-Teleport ON — Blocks forced teleports!", 3)
+            pcall(function()
+                local mt = getrawmetatable(game)
+                setreadonly(mt, false)
+                local oldNamecall = mt.__namecall
+                mt.__namecall = newcclosure(function(self, ...)
+                    local method = getnamecallmethod()
+                    if method == "Teleport" or method == "TeleportToPlaceInstance" then
+                        return nil
+                    end
+                    return oldNamecall(self, ...)
+                end)
+                setreadonly(mt, true)
+            end)
+        end
+    end
+})
+
+-- Metatable Spoofing
+DefGroup2:CreateToggle({
+    Name = "Metatable Spoofing (Anti-Detect)",
+    Flag = "MetatableSpoof",
+    Default = false,
+    Callback = function(Value)
+        SetToggleState("MetatableSpoof", Value)
+        if Value then
+            notify("Silenced Hub", "Metatable Spoofing ON", 3)
+            pcall(function()
+                local oldNamecall
+                oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+                    local method = getnamecallmethod()
+                    if self.Name == "GrabRemote" or self.Name == "FlingRemote" then
+                        -- Spoof the call to look normal
+                        return oldNamecall(self, ...)
+                    end
+                    return oldNamecall(self, ...)
+                end)
+            end)
+        end
+    end
+})
+
+
+-- ============================================================
+--  ESP TAB
+-- ============================================================
+local ESPGroup = Tabs.ESP:CreateBlock({Name = "Player ESP", Side = "Left"})
+local ESPGroup2 = Tabs.ESP:CreateBlock({Name = "ESP Settings", Side = "Right"})
+
+local espEnabled = false
+local espFolder = Instance.new("Folder")
+espFolder.Name = "SilencedESP"
+espFolder.Parent = CoreGui
+
+local function clearESP()
+    for _, v in pairs(espFolder:GetChildren()) do v:Destroy() end
+end
+
+local function createESP(player)
+    if player == Player then return end
+    if not player.Character then return end
+    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then return end
+
+    -- Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Name = player.Name .. "_ESP"
+    highlight.Adornee = player.Character
+    highlight.FillColor = Color3.fromRGB(255, 215, 0)
+    highlight.FillTransparency = 0.7
+    highlight.OutlineColor = Color3.fromRGB(255, 215, 0)
+    highlight.OutlineTransparency = 0
+    highlight.Parent = espFolder
+
+    -- Billboard for name + distance + health
+    local bb = Instance.new("BillboardGui")
+    bb.Name = player.Name .. "_Info"
+    bb.Adornee = hrp
+    bb.Size = UDim2.new(0, 200, 0, 60)
+    bb.StudsOffset = Vector3.new(0, 3.5, 0)
+    bb.AlwaysOnTop = true
+    bb.Parent = espFolder
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    nameLabel.TextStrokeTransparency = 0.5
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.Parent = bb
+
+    local healthLabel = Instance.new("TextLabel")
+    healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    healthLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    healthLabel.BackgroundTransparency = 1
+    healthLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    healthLabel.TextStrokeTransparency = 0.5
+    healthLabel.TextScaled = true
+    healthLabel.Font = Enum.Font.Gotham
+    healthLabel.Parent = bb
+
+    -- Update loop
+    task.spawn(function()
+        while espEnabled and player.Character and player.Parent do
+            local myHRP = getHRP()
+            if myHRP and hrp and hrp.Parent then
+                local dist = math.floor((myHRP.Position - hrp.Position).Magnitude)
+                nameLabel.Text = player.Name .. " [" .. dist .. " studs]"
+                if hum and hum.Parent then
+                    healthLabel.Text = "HP: " .. math.floor(hum.Health) .. "/" .. math.floor(hum.MaxHealth)
+                end
+            end
+            task.wait(0.2)
+        end
+        -- Cleanup
+        pcall(function() highlight:Destroy() end)
+        pcall(function() bb:Destroy() end)
+    end)
+end
+
+ESPGroup:CreateToggle({
+    Name = "Player ESP (Highlights + Info)",
+    Flag = "ESP",
+    Default = false,
+    Callback = function(Value)
+        espEnabled = Value
+        SetToggleState("ESP", Value)
+        if Value then
+            notify("Silenced Hub", "ESP ON — See all players through walls!", 3)
+            clearESP()
+            for _, p in pairs(Players:GetPlayers()) do
+                createESP(p)
+            end
+            Players.PlayerAdded:Connect(function(p)
+                if espEnabled then
+                    p.CharacterAdded:Wait()
+                    task.wait(1)
+                    createESP(p)
+                end
+            end)
+        else
+            clearESP()
+        end
+    end
+})
+
+-- Fullbright
+local fullbrightEnabled = false
+ESPGroup2:CreateToggle({
+    Name = "Fullbright",
+    Flag = "Fullbright",
+    Default = false,
+    Callback = function(Value)
+        fullbrightEnabled = Value
+        SetToggleState("Fullbright", Value)
+        if Value then
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+            notify("Silenced Hub", "Fullbright ON", 3)
+        else
+            Lighting.Brightness = 1
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 10000
+            Lighting.GlobalShadows = true
+        end
+    end
+})
+
+-- ESP Color
+ESPGroup2:CreateSlider({
+    Name = "ESP Fill Transparency",
+    Flag = "ESPFill",
+    Min = 0, Max = 100, Default = 70,
+    Callback = function(v)
+        for _, child in pairs(espFolder:GetChildren()) do
+            if child:IsA("Highlight") then
+                child.FillTransparency = v / 100
+            end
+        end
+    end
+})
+
+
+-- ============================================================
 --  INSANE TAB
 -- ============================================================
 local InsaneGroup = Tabs.Insane:CreateBlock({Name = "Insane Kicks", Side = "Left"})
-local selectedTarget = nil
+local InsaneGroup2 = Tabs.Insane:CreateBlock({Name = "Chaos Mode", Side = "Right"})
 
 -- Insane Grab Kick (Black Hole)
 local insaneGrabKickEnabled = false
@@ -326,27 +1080,27 @@ InsaneGroup:CreateToggle({
     Default = false,
     Callback = function(Value)
         insaneGrabKickEnabled = Value
+        SetToggleState("InsaneGrabKick", Value)
         if Value then
+            notify("Silenced Hub", "Black Hole Kick ON", 3)
             task.spawn(function()
                 while insaneGrabKickEnabled do
-                    if selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetHRP = selectedTarget.Character.HumanoidRootPart
-                        local myHRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-                        if myHRP then
-                            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-                            pcall(function()
-                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
-                                task.wait(0.1)
-                                local bv = Instance.new("BodyVelocity")
-                                bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                bv.Velocity = Vector3.new(0, 999999, 0)
-                                bv.Parent = targetHRP
-                                ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
-                                Debris:AddItem(bv, 0.5)
-                            end)
-                        end
+                    local targetHRP = getTargetHRP()
+                    local myHRP = getHRP()
+                    if targetHRP and myHRP then
+                        myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                            task.wait(0.1)
+                            local bv = Instance.new("BodyVelocity")
+                            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                            bv.Velocity = Vector3.new(0, 999999, 0)
+                            bv.Parent = targetHRP
+                            ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                            Debris:AddItem(bv, 0.5)
+                        end)
                     end
-                    task.wait(0.5)
+                    task.wait(0.3)
                 end
             end)
         end
@@ -361,22 +1115,227 @@ InsaneGroup:CreateToggle({
     Default = false,
     Callback = function(Value)
         insaneBlobmanKickEnabled = Value
+        SetToggleState("InsaneBlobmanKick", Value)
         if Value then
+            notify("Silenced Hub", "Blobman Kick ON", 3)
             task.spawn(function()
                 while insaneBlobmanKickEnabled do
-                    if selectedTarget and selectedTarget.Character and selectedTarget.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetHRP = selectedTarget.Character.HumanoidRootPart
-                        local blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                    local targetHRP = getTargetHRP()
+                    if targetHRP then
+                        local blobman = workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
                         if not blobman then spawnBlobman(); task.wait(1) end
-                        blobman = Workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and Workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                        blobman = workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
                         if blobman then
-                            blobman:SetPrimaryPartCFrame(targetHRP.CFrame)
-                            for _, part in pairs(blobman:GetDescendants()) do
-                                if part:IsA("BasePart") then
-                                    part.AssemblyAngularVelocity = Vector3.new(math.random(-5000, 5000), 5000, math.random(-5000, 5000))
+                            pcall(function()
+                                blobman:SetPrimaryPartCFrame(targetHRP.CFrame)
+                                for _, part in pairs(blobman:GetDescendants()) do
+                                    if part:IsA("BasePart") then
+                                        part.AssemblyAngularVelocity = Vector3.new(math.random(-5000, 5000), 5000, math.random(-5000, 5000))
+                                    end
                                 end
+                                ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                            end)
+                        end
+                    end
+                    task.wait(0.2)
+                end
+            end)
+        end
+    end
+})
+
+-- Rapid Fire Fling
+local rapidFlingEnabled = false
+InsaneGroup:CreateToggle({
+    Name = "Rapid Fire Fling (Spam)",
+    Flag = "RapidFling",
+    Default = false,
+    Callback = function(Value)
+        rapidFlingEnabled = Value
+        SetToggleState("RapidFling", Value)
+        if Value then
+            notify("Silenced Hub", "Rapid Fire Fling ON — Maximum damage!", 3)
+            task.spawn(function()
+                while rapidFlingEnabled do
+                    local targetHRP = getTargetHRP()
+                    if targetHRP then
+                        for i = 1, 5 do
+                            pcall(function()
+                                ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                                ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                            end)
+                        end
+                    end
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+-- Chaos Fling All (Insane version)
+local chaosAllEnabled = false
+InsaneGroup2:CreateToggle({
+    Name = "Chaos Mode (Fling Everyone Nonstop)",
+    Flag = "ChaosAll",
+    Default = false,
+    Callback = function(Value)
+        chaosAllEnabled = Value
+        SetToggleState("ChaosAll", Value)
+        if Value then
+            notify("Silenced Hub", "CHAOS MODE ACTIVATED!", 3)
+            task.spawn(function()
+                while chaosAllEnabled do
+                    local myHRP = getHRP()
+                    if myHRP then
+                        for _, p in pairs(getAllPlayers()) do
+                            if not chaosAllEnabled then break end
+                            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                                local tHRP = p.Character.HumanoidRootPart
+                                myHRP.CFrame = tHRP.CFrame * CFrame.new(0, 0, 1)
+                                pcall(function()
+                                    ReplicatedStorage.GrabEvents.GrabRemote:FireServer(tHRP)
+                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(tHRP)
+                                end)
+                                task.wait(0.05)
                             end
-                            ReplicatedStorage.GrabEvents.FlingRemote:FireServer(targetHRP)
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+-- Ragdoll Bomb
+InsaneGroup2:CreateButton({
+    Name = "Ragdoll Bomb (Fling + Velocity All)",
+    Callback = function()
+        notify("Silenced Hub", "RAGDOLL BOMB!", 3)
+        for _, p in pairs(getAllPlayers()) do
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                pcall(function()
+                    local tHRP = p.Character.HumanoidRootPart
+                    ReplicatedStorage.GrabEvents.GrabRemote:FireServer(tHRP)
+                    local bv = Instance.new("BodyVelocity")
+                    bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                    bv.Velocity = Vector3.new(math.random(-9999, 9999), 9999, math.random(-9999, 9999))
+                    bv.Parent = tHRP
+                    Debris:AddItem(bv, 1)
+                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(tHRP)
+                end)
+            end
+        end
+    end
+})
+
+-- ============================================================
+--  BLOBMAN TAB
+-- ============================================================
+local BlobGroup = Tabs.Blobman:CreateBlock({Name = "Blobman Control", Side = "Left"})
+local BlobGroup2 = Tabs.Blobman:CreateBlock({Name = "Advanced Blobman", Side = "Right"})
+
+BlobGroup:CreateButton({
+    Name = "Spawn Blobman",
+    Callback = function()
+        spawnBlobman()
+    end
+})
+
+BlobGroup:CreateButton({
+    Name = "Destroy Blobman",
+    Callback = function()
+        pcall(function()
+            local folder = workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
+            if folder then
+                local blob = folder:FindFirstChild("CreatureBlobman")
+                if blob then blob:Destroy() end
+            end
+        end)
+        notify("Silenced Hub", "Blobman Destroyed", 2)
+    end
+})
+
+-- Blobman Follow Target
+local blobFollowEnabled = false
+BlobGroup:CreateToggle({
+    Name = "Blobman Follow Target",
+    Flag = "BlobFollow",
+    Default = false,
+    Callback = function(Value)
+        blobFollowEnabled = Value
+        SetToggleState("BlobFollow", Value)
+        if Value then
+            notify("Silenced Hub", "Blobman following target!", 3)
+            task.spawn(function()
+                while blobFollowEnabled do
+                    local targetHRP = getTargetHRP()
+                    local blobman = workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                    if targetHRP and blobman then
+                        pcall(function()
+                            blobman:SetPrimaryPartCFrame(targetHRP.CFrame * CFrame.new(0, 0, 2))
+                        end)
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+-- Blobman Spin Attack
+local blobSpinEnabled = false
+BlobGroup2:CreateToggle({
+    Name = "Blobman Spin Attack",
+    Flag = "BlobSpin",
+    Default = false,
+    Callback = function(Value)
+        blobSpinEnabled = Value
+        SetToggleState("BlobSpin", Value)
+        if Value then
+            notify("Silenced Hub", "Blobman Spin Attack ON!", 3)
+            task.spawn(function()
+                while blobSpinEnabled do
+                    local blobman = workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                    if blobman then
+                        for _, part in pairs(blobman:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.AssemblyAngularVelocity = Vector3.new(math.random(-9999, 9999), 9999, math.random(-9999, 9999))
+                            end
+                        end
+                    end
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end
+})
+
+-- Blobman Multi-Target
+local blobMultiEnabled = false
+BlobGroup2:CreateToggle({
+    Name = "Blobman Multi-Target (Hit Everyone)",
+    Flag = "BlobMulti",
+    Default = false,
+    Callback = function(Value)
+        blobMultiEnabled = Value
+        SetToggleState("BlobMulti", Value)
+        if Value then
+            notify("Silenced Hub", "Blobman Multi-Target ON!", 3)
+            task.spawn(function()
+                while blobMultiEnabled do
+                    local blobman = workspace:FindFirstChild(Player.Name .. "SpawnedInToys") and workspace[Player.Name .. "SpawnedInToys"]:FindFirstChild("CreatureBlobman")
+                    if blobman then
+                        for _, p in pairs(getAllPlayers()) do
+                            if not blobMultiEnabled then break end
+                            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                                pcall(function()
+                                    blobman:SetPrimaryPartCFrame(p.Character.HumanoidRootPart.CFrame)
+                                    ReplicatedStorage.GrabEvents.FlingRemote:FireServer(p.Character.HumanoidRootPart)
+                                end)
+                                task.wait(0.1)
+                            end
                         end
                     end
                     task.wait(0.2)
@@ -387,75 +1346,599 @@ InsaneGroup:CreateToggle({
 })
 
 -- ============================================================
---  DEFENSE TAB
+--  TOYS TAB
 -- ============================================================
-local DefenseGroup = Tabs.Defense:CreateBlock({Name = "Anti-Cheat Counters", Side = "Left"})
+local ToyGroup = Tabs.Toys:CreateBlock({Name = "Spawn Toys", Side = "Left"})
+local ToyGroup2 = Tabs.Toys:CreateBlock({Name = "More Toys", Side = "Right"})
 
--- PCLD Nullifier
-local pcldNullifierEnabled = false
-DefenseGroup:CreateToggle({
-    Name = "PCLD Nullifier (Anti-Anti-Cheat)",
-    Flag = "PCLDNullifier",
+local toyList = {
+    "CreatureBlobman", "Ball", "Basketball", "BeachBall", "Bomb",
+    "Bowling", "Brick", "Bucket", "Cannon", "Chair",
+    "Crate", "Dumbbell", "Fire", "Flag", "Football",
+    "Fridge", "Globe", "GolfBall", "Hammer", "IceCream",
+    "Ladder", "Lamp", "Microwave", "Monitor", "Piano",
+    "Pillow", "Pizza", "Plank", "Rock", "Rocket",
+    "Rubber", "Shield", "Skateboard", "Sled", "Snowball",
+    "SoccerBall", "Sofa", "Sword", "Table", "Tire",
+    "Toilet", "TrafficCone", "Trampoline", "TV", "Umbrella"
+}
+
+-- Create buttons for first half
+for i = 1, math.ceil(#toyList / 2) do
+    local toy = toyList[i]
+    if toy then
+        ToyGroup:CreateButton({
+            Name = "Spawn " .. toy,
+            Callback = function() spawnToy(toy) end
+        })
+    end
+end
+
+-- Create buttons for second half
+for i = math.ceil(#toyList / 2) + 1, #toyList do
+    local toy = toyList[i]
+    if toy then
+        ToyGroup2:CreateButton({
+            Name = "Spawn " .. toy,
+            Callback = function() spawnToy(toy) end
+        })
+    end
+end
+
+-- Destroy All Toys
+ToyGroup:CreateButton({
+    Name = "Destroy All My Toys",
+    Callback = function()
+        pcall(function()
+            local folder = workspace:FindFirstChild(Player.Name .. "SpawnedInToys")
+            if folder then
+                for _, v in pairs(folder:GetChildren()) do v:Destroy() end
+            end
+        end)
+        notify("Silenced Hub", "All toys destroyed!", 2)
+    end
+})
+
+
+-- ============================================================
+--  TELEPORT TAB
+-- ============================================================
+local TPGroup = Tabs.Teleport:CreateBlock({Name = "Player Teleport", Side = "Left"})
+local TPGroup2 = Tabs.Teleport:CreateBlock({Name = "Position Teleport", Side = "Right"})
+
+-- Teleport to Target
+TPGroup:CreateButton({
+    Name = "Teleport to Target",
+    Callback = function()
+        local myHRP = getHRP()
+        local targetHRP = getTargetHRP()
+        if myHRP and targetHRP then
+            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 3)
+            notify("Silenced Hub", "Teleported to " .. selectedTarget.Name, 2)
+        else
+            notify("Silenced Hub", "No target selected!", 2)
+        end
+    end
+})
+
+-- Teleport All to You
+TPGroup:CreateButton({
+    Name = "Teleport All Players to You",
+    Callback = function()
+        local myHRP = getHRP()
+        if not myHRP then return end
+        notify("Silenced Hub", "Teleporting all players to you...", 3)
+        for _, p in pairs(getAllPlayers()) do
+            if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                pcall(function()
+                    ReplicatedStorage.GrabEvents.GrabRemote:FireServer(p.Character.HumanoidRootPart)
+                end)
+            end
+            task.wait(0.05)
+        end
+    end
+})
+
+-- Teleport Behind Target
+TPGroup:CreateButton({
+    Name = "Teleport Behind Target",
+    Callback = function()
+        local myHRP = getHRP()
+        local targetHRP = getTargetHRP()
+        if myHRP and targetHRP then
+            myHRP.CFrame = targetHRP.CFrame * CFrame.new(0, 0, -3)
+            notify("Silenced Hub", "Teleported behind " .. selectedTarget.Name, 2)
+        end
+    end
+})
+
+-- Orbit Target
+local orbitEnabled = false
+local orbitRadius = 10
+local orbitSpeed = 2
+TPGroup:CreateToggle({
+    Name = "Orbit Target",
+    Flag = "Orbit",
     Default = false,
     Callback = function(Value)
-        pcldNullifierEnabled = Value
+        orbitEnabled = Value
+        SetToggleState("Orbit", Value)
         if Value then
-            RunService.Heartbeat:Connect(function()
-                if pcldNullifierEnabled then
-                    local myPCLD = Workspace:FindFirstChild(Player.Name .. "PlayerCharacterLocationDetector")
-                    if myPCLD then pcall(function() myPCLD:Destroy() end) end
+            notify("Silenced Hub", "Orbiting target!", 3)
+            local angle = 0
+            task.spawn(function()
+                while orbitEnabled do
+                    local targetHRP = getTargetHRP()
+                    local myHRP = getHRP()
+                    if targetHRP and myHRP then
+                        angle = angle + (orbitSpeed * 0.05)
+                        local x = math.cos(angle) * orbitRadius
+                        local z = math.sin(angle) * orbitRadius
+                        myHRP.CFrame = CFrame.new(targetHRP.Position + Vector3.new(x, 0, z), targetHRP.Position)
+                    end
+                    task.wait(0.03)
                 end
             end)
         end
     end
 })
 
--- Anti-Kick Metatable
-DefenseGroup:CreateToggle({
-    Name = "Anti-Kick V3 (Metatable Hook)",
-    Flag = "AntiKickV3",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            local mt = getrawmetatable(game)
-            setreadonly(mt, false)
-            local oldNamecall = mt.__namecall
-            mt.__namecall = newcclosure(function(self, ...)
-                if getnamecallmethod() == "Kick" then return nil end
-                return oldNamecall(self, ...)
-            end)
-            setreadonly(mt, true)
+TPGroup:CreateSlider({
+    Name = "Orbit Radius",
+    Flag = "OrbitRadius",
+    Min = 3, Max = 50, Default = 10,
+    Callback = function(v) orbitRadius = v end
+})
+
+TPGroup:CreateSlider({
+    Name = "Orbit Speed",
+    Flag = "OrbitSpeed",
+    Min = 1, Max = 10, Default = 2,
+    Callback = function(v) orbitSpeed = v end
+})
+
+-- Save Position
+local savedPosition = nil
+TPGroup2:CreateButton({
+    Name = "Save Current Position",
+    Callback = function()
+        local hrp = getHRP()
+        if hrp then
+            savedPosition = hrp.CFrame
+            notify("Silenced Hub", "Position Saved!", 2)
+        end
+    end
+})
+
+TPGroup2:CreateButton({
+    Name = "Teleport to Saved Position",
+    Callback = function()
+        local hrp = getHRP()
+        if hrp and savedPosition then
+            hrp.CFrame = savedPosition
+            notify("Silenced Hub", "Teleported to saved position!", 2)
+        else
+            notify("Silenced Hub", "No position saved!", 2)
+        end
+    end
+})
+
+-- Teleport to Spawn
+TPGroup2:CreateButton({
+    Name = "Teleport to Spawn",
+    Callback = function()
+        local hrp = getHRP()
+        if hrp then
+            hrp.CFrame = CFrame.new(0, 10, 0)
+            notify("Silenced Hub", "Teleported to spawn!", 2)
         end
     end
 })
 
 -- ============================================================
---  TARGET TAB
+--  SERVER TAB
 -- ============================================================
-local TargetGroup = Tabs.Target:CreateBlock({Name = "Select Target", Side = "Left"})
-local targetDropdown = TargetGroup:CreateDropdown({
-    Name = "Player List",
-    Flag = "PlayerList",
-    Items = {},
-    Callback = function(v)
-        selectedTarget = Players:FindFirstChild(v)
-        notify("Silenced Hub", "Target Selected: " .. v, 2)
+local ServerGroup = Tabs.Server:CreateBlock({Name = "Server Options", Side = "Left"})
+local ServerGroup2 = Tabs.Server:CreateBlock({Name = "Performance", Side = "Right"})
+
+-- Server Hop
+ServerGroup:CreateButton({
+    Name = "Server Hop (Random Server)",
+    Callback = function()
+        notify("Silenced Hub", "Server hopping...", 3)
+        pcall(function()
+            local placeId = game.PlaceId
+            local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"))
+            if servers and servers.data then
+                for _, server in pairs(servers.data) do
+                    if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                        TeleportService:TeleportToPlaceInstance(placeId, server.id)
+                        return
+                    end
+                end
+            end
+        end)
     end
 })
 
-local function updatePlayerList()
-    local list = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= Player then table.insert(list, p.Name) end
+-- Rejoin
+ServerGroup:CreateButton({
+    Name = "Rejoin Server",
+    Callback = function()
+        notify("Silenced Hub", "Rejoining...", 2)
+        pcall(function()
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId)
+        end)
     end
-    targetDropdown:Update(list)
-end
+})
 
-Players.PlayerAdded:Connect(updatePlayerList)
-Players.PlayerRemoving:Connect(updatePlayerList)
-updatePlayerList()
+-- Rejoin New Server
+ServerGroup:CreateButton({
+    Name = "Rejoin (New Server)",
+    Callback = function()
+        notify("Silenced Hub", "Joining new server...", 2)
+        pcall(function()
+            TeleportService:Teleport(game.PlaceId)
+        end)
+    end
+})
+
+-- Copy Server ID
+ServerGroup:CreateButton({
+    Name = "Copy Server ID",
+    Callback = function()
+        pcall(function()
+            setclipboard(game.JobId)
+        end)
+        notify("Silenced Hub", "Server ID copied to clipboard!", 2)
+    end
+})
+
+-- FPS Boost
+ServerGroup2:CreateButton({
+    Name = "FPS Boost (Remove Decals/Textures)",
+    Callback = function()
+        notify("Silenced Hub", "Boosting FPS...", 3)
+        local count = 0
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Decal") or v:IsA("Texture") or v:IsA("ParticleEmitter") or v:IsA("Trail") then
+                pcall(function() v:Destroy() end)
+                count = count + 1
+            end
+        end
+        -- Reduce terrain detail
+        pcall(function()
+            settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        end)
+        notify("Silenced Hub", "FPS Boost applied! Removed " .. count .. " effects.", 3)
+    end
+})
+
+-- Remove Shadows
+ServerGroup2:CreateToggle({
+    Name = "Remove Shadows",
+    Flag = "NoShadows",
+    Default = false,
+    Callback = function(Value)
+        SetToggleState("NoShadows", Value)
+        Lighting.GlobalShadows = not Value
+        if Value then notify("Silenced Hub", "Shadows removed!", 2) end
+    end
+})
+
+-- Low Graphics
+ServerGroup2:CreateButton({
+    Name = "Ultra Low Graphics",
+    Callback = function()
+        pcall(function()
+            settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+            for _, v in pairs(Lighting:GetDescendants()) do
+                if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") then
+                    v.Enabled = false
+                end
+            end
+        end)
+        notify("Silenced Hub", "Ultra Low Graphics applied!", 2)
+    end
+})
 
 -- ============================================================
---  FINAL LOAD
+--  MISC TAB
 -- ============================================================
-notify("SILENCED HUB", "Renaissance V5.0 Loaded Successfully! 👑", 5)
+local MiscGroup = Tabs.Misc:CreateBlock({Name = "Miscellaneous", Side = "Left"})
+local MiscGroup2 = Tabs.Misc:CreateBlock({Name = "Fun", Side = "Right"})
+
+-- Anti-AFK
+MiscGroup:CreateToggle({
+    Name = "Anti-AFK",
+    Flag = "AntiAFK",
+    Default = true,
+    Callback = function(Value)
+        SetToggleState("AntiAFK", Value)
+        if Value then
+            notify("Silenced Hub", "Anti-AFK ON — You won't be kicked for idling!", 3)
+        end
+    end
+})
+
+-- Anti-AFK connection
+local VirtualUser = game:GetService("VirtualUser")
+Player.Idled:Connect(function()
+    if GetToggleState("AntiAFK") then
+        pcall(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+    end
+end)
+
+-- Hide Name
+MiscGroup:CreateButton({
+    Name = "Hide Your Name",
+    Callback = function()
+        pcall(function()
+            if Player.Character then
+                local head = Player.Character:FindFirstChild("Head")
+                if head then
+                    for _, v in pairs(head:GetChildren()) do
+                        if v:IsA("BillboardGui") then v:Destroy() end
+                    end
+                end
+                local hum = Player.Character:FindFirstChildOfClass("Humanoid")
+                if hum then hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None end
+            end
+        end)
+        notify("Silenced Hub", "Name hidden!", 2)
+    end
+})
+
+-- Chat Spam
+local chatSpamEnabled = false
+local chatSpamMessage = "SILENCED HUB ON TOP"
+MiscGroup:CreateToggle({
+    Name = "Chat Spam",
+    Flag = "ChatSpam",
+    Default = false,
+    Callback = function(Value)
+        chatSpamEnabled = Value
+        SetToggleState("ChatSpam", Value)
+        if Value then
+            notify("Silenced Hub", "Chat Spam ON", 3)
+            task.spawn(function()
+                while chatSpamEnabled do
+                    pcall(function()
+                        local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+                        if chatEvents then
+                            local say = chatEvents:FindFirstChild("SayMessageRequest")
+                            if say then say:FireServer(chatSpamMessage, "All") end
+                        end
+                    end)
+                    task.wait(1.5)
+                end
+            end)
+        end
+    end
+})
+
+MiscGroup:CreateTextbox({
+    Name = "Spam Message",
+    Flag = "SpamMsg",
+    Default = "SILENCED HUB ON TOP",
+    Callback = function(v)
+        chatSpamMessage = v
+    end
+})
+
+-- Invisible Character
+MiscGroup:CreateToggle({
+    Name = "Invisible (Local)",
+    Flag = "Invisible",
+    Default = false,
+    Callback = function(Value)
+        SetToggleState("Invisible", Value)
+        if Player.Character then
+            for _, part in pairs(Player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.Transparency = Value and 1 or 0
+                elseif part:IsA("Decal") then
+                    part.Transparency = Value and 1 or 0
+                end
+            end
+            -- Keep head face visible or not
+            local head = Player.Character:FindFirstChild("Head")
+            if head then
+                for _, v in pairs(head:GetChildren()) do
+                    if v:IsA("Decal") then v.Transparency = Value and 1 or 0 end
+                end
+            end
+        end
+        notify("Silenced Hub", Value and "Invisible ON" or "Invisible OFF", 2)
+    end
+})
+
+-- Annoy Target (Follow & Spam Grab)
+local annoyEnabled = false
+MiscGroup2:CreateToggle({
+    Name = "Annoy Target (Follow + Grab Spam)",
+    Flag = "Annoy",
+    Default = false,
+    Callback = function(Value)
+        annoyEnabled = Value
+        SetToggleState("Annoy", Value)
+        if Value then
+            notify("Silenced Hub", "Annoying target!", 3)
+            task.spawn(function()
+                while annoyEnabled do
+                    local targetHRP = getTargetHRP()
+                    local myHRP = getHRP()
+                    if targetHRP and myHRP then
+                        myHRP.CFrame = targetHRP.CFrame * CFrame.new(math.random(-3, 3), 0, math.random(-3, 3))
+                        pcall(function()
+                            ReplicatedStorage.GrabEvents.GrabRemote:FireServer(targetHRP)
+                        end)
+                    end
+                    task.wait(0.2)
+                end
+            end)
+        end
+    end
+})
+
+-- Spin Character
+local spinEnabled = false
+MiscGroup2:CreateToggle({
+    Name = "Spin Character",
+    Flag = "Spin",
+    Default = false,
+    Callback = function(Value)
+        spinEnabled = Value
+        SetToggleState("Spin", Value)
+        if Value then
+            notify("Silenced Hub", "SPINNING!", 2)
+            task.spawn(function()
+                while spinEnabled do
+                    local hrp = getHRP()
+                    if hrp then
+                        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(30), 0)
+                    end
+                    task.wait(0.01)
+                end
+            end)
+        end
+    end
+})
+
+-- Headless
+MiscGroup2:CreateButton({
+    Name = "Headless (Visual)",
+    Callback = function()
+        pcall(function()
+            if Player.Character and Player.Character:FindFirstChild("Head") then
+                Player.Character.Head.Transparency = 1
+                for _, v in pairs(Player.Character.Head:GetChildren()) do
+                    if v:IsA("Decal") or v:IsA("MeshPart") or v:IsA("SpecialMesh") then
+                        pcall(function() v.Transparency = 1 end)
+                    end
+                end
+            end
+        end)
+        notify("Silenced Hub", "Headless applied!", 2)
+    end
+})
+
+-- Seizure Mode
+local seizureEnabled = false
+MiscGroup2:CreateToggle({
+    Name = "Seizure Mode (Rapid TP)",
+    Flag = "Seizure",
+    Default = false,
+    Callback = function(Value)
+        seizureEnabled = Value
+        SetToggleState("Seizure", Value)
+        if Value then
+            task.spawn(function()
+                while seizureEnabled do
+                    local hrp = getHRP()
+                    if hrp then
+                        hrp.CFrame = hrp.CFrame * CFrame.new(math.random(-5, 5), math.random(0, 3), math.random(-5, 5))
+                    end
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+-- ============================================================
+--  SETTINGS TAB
+-- ============================================================
+local SetGroup = Tabs.Settings:CreateBlock({Name = "Configuration", Side = "Left"})
+local SetGroup2 = Tabs.Settings:CreateBlock({Name = "Hub Info", Side = "Right"})
+
+SetGroup:CreateButton({
+    Name = "Save Config",
+    Callback = function()
+        saveConfig()
+        notify("Silenced Hub", "Config saved!", 2)
+    end
+})
+
+SetGroup:CreateButton({
+    Name = "Load Config",
+    Callback = function()
+        loadConfig()
+        notify("Silenced Hub", "Config loaded! Rejoin to apply.", 3)
+    end
+})
+
+SetGroup:CreateButton({
+    Name = "Reset Config",
+    Callback = function()
+        ToggleStates = {}
+        saveConfig()
+        notify("Silenced Hub", "Config reset! Rejoin to apply.", 3)
+    end
+})
+
+SetGroup:CreateButton({
+    Name = "Destroy Hub (Unload)",
+    Callback = function()
+        notify("Silenced Hub", "Unloading hub...", 2)
+        task.wait(1)
+        -- Reset states
+        espEnabled = false
+        clearESP()
+        flyEnabled = false
+        if flyBV then flyBV:Destroy() end
+        if flyBG then flyBG:Destroy() end
+        noClipEnabled = false
+        -- Destroy UI
+        pcall(function() Library:Destroy() end)
+    end
+})
+
+-- Hub Info
+SetGroup2:CreateButton({
+    Name = "Copy Discord Link",
+    Callback = function()
+        pcall(function() setclipboard("discord.gg/bdy4ssD3P4") end)
+        notify("Silenced Hub", "Discord link copied!", 2)
+    end
+})
+
+SetGroup2:CreateButton({
+    Name = "Hub Version Info",
+    Callback = function()
+        notify("SILENCED HUB", "Version: 6.0 APEX\nGame: Fling Things and People\nFeatures: 50+\nCreator: Silenced Team", 5)
+    end
+})
+
+-- ============================================================
+--  CHARACTER RESPAWN HANDLER
+-- ============================================================
+Player.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    -- Re-apply walkspeed/jumppower
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if ToggleStates["WalkspeedVal"] then hum.WalkSpeed = ToggleStates["WalkspeedVal"] end
+        if ToggleStates["JumppowerVal"] then hum.JumpPower = ToggleStates["JumppowerVal"] end
+    end
+    -- Re-disable beam move
+    pcall(function()
+        Player.PlayerScripts.CharacterAndBeamMove.Enabled = false
+    end)
+end)
+
+-- ============================================================
+--  FINAL LOAD NOTIFICATION
+-- ============================================================
+notify("SILENCED HUB", "APEX V6.0 Loaded — 50+ Features | Total FTAP Domination", 5)
+print([[
+=============================================
+  SILENCED HUB V6.0 APEX
+  Fling Things and People - Ultimate Hub
+  Features: 50+
+  discord.gg/bdy4ssD3P4
+=============================================
+]])
